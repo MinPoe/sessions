@@ -1,0 +1,5 @@
+<pasted_content id="00aa">
+**3. `build(app): add per-monitor DPI awareness manifest`**
+- Add `app.manifest` to App with `PerMonitorV2`.
+- Done when: app starts; build succeeds.
+</pasted_content id="00aa">
