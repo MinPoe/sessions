@@ -1,0 +1,14 @@
+<pasted_content id="00aa">
+7. `feat(core): add store list and delete`**
+- `List()` returns sessions plus a list of per-file load errors; `Delete(Guid)` throws if missing.
+- Tests: list, list with one corrupt file, delete, delete missing.
+
+**8. `feat(core): add minimal file logger`**
+- `Log.Write(string)` appends to `%APPDATA%\Sessions\log.txt`.
+- Test: writes a line to an injected path.
+
+**9. `ci: add GitHub Actions build and test workflow`**
+- Add `.github/workflows/ci.yml`: runs on push to `dev` and `main` and on pull requests to `main`.
+- One job on `windows-latest`: `actions/checkout@v4`, `actions/setup-dotnet@v4` with `dotnet-version: 10.0.x`, then `dotnet restore`, `dotnet build --no-restore -c Release`, `dotnet test --no-build -c Release`.
+- Done when: the workflow run on `dev` is green on GitHub.
+</pasted_content id="00aa">

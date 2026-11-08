@@ -1,0 +1,47 @@
+{
+  "cli_version": "0.13.1",
+  "checkpoint_id": "01M6WPRJWVKHPNDWS022A4XWDV",
+  "session_id": "3fdead9a-2313-4930-84dc-637d68773cbd",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-08T04:30:45.6650998Z",
+  "branch": "dev",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    ".github/workflows/ci.yml",
+    "src/Sessions.Core/JsonSessionStore.cs",
+    "src/Sessions.Core/Log.cs",
+    "tests/Sessions.Tests/JsonSessionStoreTests.cs",
+    "tests/Sessions.Tests/LogTests.cs"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8",
+  "turn_id": "f6404cc50d17",
+  "checkpoint_transcript_start": 268,
+  "transcript_lines_at_start": 268,
+  "compact_transcript_start": 28,
+  "token_usage": {
+    "input_tokens": 20,
+    "cache_creation_tokens": 6549,
+    "cache_read_tokens": 632758,
+    "output_tokens": 4541,
+    "api_call_count": 10
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "session_metrics": {
+    "turn_count": 5
+  }
+}
