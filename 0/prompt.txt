@@ -1,0 +1,1 @@
+put the logo in the root folder as a png
