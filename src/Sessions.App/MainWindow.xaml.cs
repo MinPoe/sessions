@@ -78,7 +78,7 @@ public partial class MainWindow : Window, IShell
     {
         JsonSessionStore store = new(JsonSessionStore.DefaultDirectory);
         AdapterRegistry registry = new(
-            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter() },
+            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter(), new BrowserAdapter() },
             new GenericAdapter());
 
         NewSessionDialog dialog = new(new NewSessionViewModel(store, registry)) { Owner = this };
@@ -89,7 +89,7 @@ public partial class MainWindow : Window, IShell
     public IReadOnlyList<WindowInfo>? ShowAddWindowsDialog()
     {
         AdapterRegistry registry = new(
-            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter() },
+            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter(), new BrowserAdapter() },
             new GenericAdapter());
 
         AddWindowsDialog dialog = new(new AddWindowsViewModel(registry)) { Owner = this };

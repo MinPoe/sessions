@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Sessions Browser Relay",
+  "version": "1.0.0",
+  "description": "Reports the open tab urls of each Chrome window to the Sessions app",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAogKHZ5swPZJcYHDkqnrJ0LLg+YLLZseSaJ39Uxa7t6J84QCTYYFArBs0w19g79x49dvRtYYJpe2F3SCDy5ILHLyHneSle7RmzWY/N+vctg4ptdO5JhC+lkAgLNOMnZNWHL7K8IHyeqQnIsPPSpvjfkLNdunFLMU4MtF6CFxGSKpfHEi5Ar+1jf/SFp8owMuTjcaJ10eCw1Y4zcls6C0Ps7WTCHwCq3crRTMyUinSMywn5S19ebHkX5cF93NaEAmcSrlMdon6VioBgYB/HC6YYxkz+C5TuLKJNS/LMTjswRQsVC9PVPI1H5c/8yBkTI0KBCxd6Yh9fhtcQ6R2uU1J0QIDAQAB",
+  "permissions": ["tabs", "nativeMessaging"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

@@ -22,7 +22,7 @@ public sealed class MainViewModel : ObservableObject
         _shell = shell ?? throw new ArgumentNullException(nameof(shell));
         _store = store ?? new JsonSessionStore(JsonSessionStore.DefaultDirectory);
         _registry = new AdapterRegistry(
-            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter() },
+            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter(), new BrowserAdapter() },
             new GenericAdapter());
 
         NewCommand = new RelayCommand(NewSession);

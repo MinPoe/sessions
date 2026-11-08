@@ -37,6 +37,21 @@ public class EntryTests
     }
 
     [Fact]
+    public void BrowserEntry_RoundTrips_ThroughBaseType()
+    {
+        Entry original = new BrowserEntry(
+            DisplayName: "Chrome - Example +2",
+            Placement: new Placement(5, 5, 1400, 900, 1),
+            Urls: new[] { "https://a.example", "https://b.example", "https://c.example" });
+
+        string json = JsonSerializer.Serialize(original);
+        Entry? restored = JsonSerializer.Deserialize<Entry>(json);
+
+        Assert.Equal(original, restored);
+        Assert.IsType<BrowserEntry>(restored);
+    }
+
+    [Fact]
     public void TerminalEntry_RoundTrips_ThroughBaseType()
     {
         Entry original = new TerminalEntry(

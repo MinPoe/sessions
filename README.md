@@ -54,12 +54,27 @@ open a new PowerShell tab afterwards so the hook loads, it writes one record per
 The hook is PowerShell only, a Command Prompt (`cmd.exe`) tab is not recorded, run Claude Code from a
 PowerShell tab if you want its session captured,
 
+## Chrome tabs (optional)
+
+To capture and reopen the tabs of a Chrome window, set up the browser extension and its native host,
+without this Chrome still captures but reopens on a blank page, see docs/spikes/browser.md
+
+1. build the host, `dotnet build src/Sessions.BrowserHost`
+2. register it, `powershell -ExecutionPolicy Bypass -File tools\browser-host\install.ps1`, this writes
+   the host manifest and an HKCU registry key, and prints the extension id
+3. load the `extension` folder as an unpacked extension at `chrome://extensions` (Developer mode on),
+   confirm its id matches the one the install script printed
+4. capture a session with a Chrome window open, its tabs are saved, Load reopens them in one window
+
+remove it later with `tools\browser-host\uninstall.ps1` and by removing the unpacked extension
+
 ## Known limits
 
 - the generic adapter relaunches an app by its executable only, so an app that keeps its state in
   arguments, a profile, or a single running instance does not come back to the same content
-- Google Chrome reopens but lands on a blank or default tab, the specific tabs and urls are not
-  captured (a browser adapter is a planned addition)
+- Google Chrome reopens its tabs only when the browser extension and native host are installed (see
+  above), without them Chrome lands on a blank page, and even with them two Chrome windows showing the
+  same page cannot be told apart and are reported as a failure
 - Spotify is launcher-based and single-instance, relaunching its executable is a no-op, so it is
   reported as a failed entry rather than reopening
 - VS Code resolves the folder from its saved window state and then its recent-folders list, a folder
@@ -77,6 +92,9 @@ PowerShell tab if you want its session captured,
 
 - `src/Sessions.Core` - models, window enumeration and placement, the adapters, the session store
 - `src/Sessions.App` - the WPF app (MVVM), light and dark theme following the system setting
+- `src/Sessions.BrowserHost` - the Chrome native messaging host (a thin stdio-to-pipe relay)
 - `tests/Sessions.Tests` - xUnit tests for the core
 - `tools/terminal-hook` - the PowerShell terminal hook
-- `docs/spikes` - notes from the VS Code and terminal investigations
+- `tools/browser-host` - install and uninstall scripts for the Chrome host
+- `extension` - the MV3 Chrome extension that reports open tab urls
+- `docs/spikes` - notes from the VS Code, terminal, and browser investigations

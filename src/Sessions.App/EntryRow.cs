@@ -23,6 +23,11 @@ public sealed class EntryRow
         {
             Detail = vsCode.Path;
         }
+        else if (entry is BrowserEntry browser)
+        {
+            int n = browser.Urls.Count;
+            Detail = n == 1 ? browser.Urls[0] : $"{n} tabs";
+        }
         else if (entry is TerminalEntry terminal)
         {
             Detail = string.Join("  ", terminal.Tabs.Select(t =>
