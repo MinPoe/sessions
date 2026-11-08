@@ -1,22 +1,25 @@
 using System.Collections.Generic;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Sessions.Core;
 
-// Enumerates the "real" top-level windows: visible, titled, unowned, and not
-// tool windows. These are the ones worth offering the user to capture/place.
+// Enumerates the "real" top-level windows: visible, titled, unowned, not tool
+// windows, not cloaked, not our own, and not the desktop shell. These are the
+// ones worth offering the user to capture/place, enriched with process details.
 public static class WindowEnumerator
 {
     public static IReadOnlyList<WindowInfo> Enumerate()
     {
+        uint ownProcessId = (uint)Environment.ProcessId;
         List<WindowInfo> windows = new();
 
         PInvoke.EnumWindows(
             (HWND hwnd, LPARAM _) =>
             {
-                if (TryDescribe(hwnd, out WindowInfo info))
+                if (TryDescribe(hwnd, ownProcessId, out WindowInfo info))
                 {
                     windows.Add(info);
                 }
@@ -28,7 +31,7 @@ public static class WindowEnumerator
         return windows;
     }
 
-    private static bool TryDescribe(HWND hwnd, out WindowInfo info)
+    private static bool TryDescribe(HWND hwnd, uint ownProcessId, out WindowInfo info)
     {
         info = default!;
 
@@ -52,8 +55,21 @@ public static class WindowEnumerator
             return false;
         }
 
+        // Skip app-cloaked windows (e.g. suspended UWP apps), but keep windows
+        // cloaked only by the shell for being on another virtual desktop.
+        if (IsAppCloaked(hwnd))
+        {
+            return false;
+        }
+
         string title = GetTitle(hwnd);
         if (title.Length == 0)
+        {
+            return false;
+        }
+
+        // Skip the desktop shell's own window.
+        if (title == "Program Manager")
         {
             return false;
         }
@@ -64,8 +80,46 @@ public static class WindowEnumerator
             _ = PInvoke.GetWindowThreadProcessId(hwnd, &processId);
         }
 
-        info = new WindowInfo(hwnd, title, processId);
+        // Skip our own windows.
+        if (processId == ownProcessId)
+        {
+            return false;
+        }
+
+        (string? exePath, string? reason) = ProcessDetails.ReadExePath(processId);
+        (string? commandLine, uint? parentProcessId) = ProcessDetails.ReadWmi(processId);
+
+        info = new WindowInfo(hwnd, title, processId)
+        {
+            ExePath = exePath,
+            UnsupportedReason = reason,
+            CommandLine = commandLine,
+            ParentProcessId = parentProcessId,
+        };
         return true;
+    }
+
+    private static bool IsAppCloaked(HWND hwnd)
+    {
+        const uint DWM_CLOAKED_SHELL = 0x0000002; // cloaked by the shell (other virtual desktop)
+
+        unsafe
+        {
+            uint cloaked;
+            HRESULT hr = PInvoke.DwmGetWindowAttribute(
+                hwnd,
+                DWMWINDOWATTRIBUTE.DWMWA_CLOAKED,
+                &cloaked,
+                (uint)sizeof(uint));
+
+            if (hr.Failed || cloaked == 0)
+            {
+                return false;
+            }
+
+            // Keep windows cloaked only because they're on another virtual desktop.
+            return cloaked != DWM_CLOAKED_SHELL;
+        }
     }
 
     private static string GetTitle(HWND hwnd)

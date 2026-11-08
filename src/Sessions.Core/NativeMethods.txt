@@ -5,3 +5,7 @@ GetWindowTextLength
 GetWindow
 GetWindowLong
 GetWindowThreadProcessId
+DwmGetWindowAttribute
+OpenProcess
+QueryFullProcessImageName
+CloseHandle
