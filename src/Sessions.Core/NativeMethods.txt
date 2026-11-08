@@ -1,0 +1,7 @@
+EnumWindows
+IsWindowVisible
+GetWindowText
+GetWindowTextLength
+GetWindow
+GetWindowLong
+GetWindowThreadProcessId
