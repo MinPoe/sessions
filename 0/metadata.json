@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.13.1",
+  "checkpoint_id": "01M6WQZDN8QX6Q7G95RSRCGGXA",
+  "session_id": "3fdead9a-2313-4930-84dc-637d68773cbd",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-08T04:51:58.3015059Z",
+  "branch": "dev",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "src/Sessions.Core/NativeMethods.txt",
+    "src/Sessions.Core/Sessions.Core.csproj",
+    "src/Sessions.Core/WindowEnumerator.cs",
+    "src/Sessions.Core/WindowInfo.cs"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8",
+  "turn_id": "50a474d95c2f",
+  "checkpoint_transcript_start": 373,
+  "transcript_lines_at_start": 373,
+  "compact_transcript_start": 42,
+  "token_usage": {
+    "input_tokens": 28,
+    "cache_creation_tokens": 10917,
+    "cache_read_tokens": 1019761,
+    "output_tokens": 8126,
+    "api_call_count": 14
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "session_metrics": {
+    "turn_count": 7
+  }
+}

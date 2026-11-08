@@ -1,0 +1,6 @@
+<pasted_content id="00aa">
+**10. `feat(core): enumerate visible top-level windows`**
+- NativeMethods: `EnumWindows`, `IsWindowVisible`, `GetWindowText`, `GetWindowTextLength`, `GetWindow`, `GetWindowLong`, `GetWindowThreadProcessId`.
+- `WindowEnumerator` keeps windows that are visible, titled, have no owner, and are not `WS_EX_TOOLWINDOW`.
+- Done when: a temporary console call (not committed) prints sensible titles.
+</pasted_content id="00aa">
