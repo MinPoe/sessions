@@ -27,6 +27,26 @@ public sealed class SessionCaptureService
         ArgumentNullException.ThrowIfNull(windows);
         ValidateName(name);
 
+        (IReadOnlyList<Entry> entries, IReadOnlyList<CaptureFailure> failures) = CaptureEntries(windows);
+
+        Session session = new(
+            SchemaVersion: Session.CurrentSchemaVersion,
+            Id: Guid.NewGuid(),
+            Name: name,
+            CreatedAt: DateTimeOffset.Now,
+            Entries: entries);
+
+        return new SessionCaptureResult(session, failures);
+    }
+
+    // Captures just the entries for a set of windows, used both to build a new
+    // session and to add windows to an existing one, per-window failures are
+    // collected rather than thrown
+    public (IReadOnlyList<Entry> Entries, IReadOnlyList<CaptureFailure> Failures) CaptureEntries(
+        IEnumerable<WindowInfo> windows)
+    {
+        ArgumentNullException.ThrowIfNull(windows);
+
         List<Entry> entries = new();
         List<CaptureFailure> failures = new();
 
@@ -49,14 +69,7 @@ public sealed class SessionCaptureService
             }
         }
 
-        Session session = new(
-            SchemaVersion: Session.CurrentSchemaVersion,
-            Id: Guid.NewGuid(),
-            Name: name,
-            CreatedAt: DateTimeOffset.Now,
-            Entries: entries);
-
-        return new SessionCaptureResult(session, failures);
+        return (entries, failures);
     }
 
     private void ValidateName(string name)

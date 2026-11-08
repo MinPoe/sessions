@@ -145,6 +145,38 @@ public class VsCodeStorageTests
     }
 
     [Fact]
+    public void ParseRecentFolders_KeepsLocalFoldersAndWorkspaces_SkipsFilesAndRemote()
+    {
+        const string json =
+            """
+            {
+              "entries": [
+                { "folderUri": "file:///c%3A/Users/me/Desktop/sessions" },
+                { "workspace": { "id": "x", "configPath": "file:///c%3A/Users/me/proj/foo.code-workspace" } },
+                { "fileUri": "file:///c%3A/Users/me/Desktop/sessions/README.md" },
+                { "folderUri": "vscode-remote://ssh-remote%2Bhost/home/me/thing" }
+              ]
+            }
+            """;
+
+        var windows = VsCodeStorage.ParseRecentFolders(json);
+
+        Assert.Equal(2, windows.Count);
+        Assert.Contains(windows, w => !w.IsWorkspace && w.Path == @"c:\Users\me\Desktop\sessions");
+        Assert.Contains(windows, w => w.IsWorkspace && w.Path == @"c:\Users\me\proj\foo.code-workspace");
+    }
+
+    [Fact]
+    public void ParseRecentFolders_ResolvesByTitle()
+    {
+        const string json =
+            """{ "entries": [ { "folderUri": "file:///c%3A/a/eth-uvm-tb" }, { "folderUri": "file:///c%3A/b/sessions" } ] }""";
+
+        var windows = VsCodeStorage.ParseRecentFolders(json);
+        Assert.Equal(@"c:\b\sessions", VsCodeStorage.Resolve("vscode.md - sessions - Visual Studio Code", windows));
+    }
+
+    [Fact]
     public void Resolve_AmbiguousSameBaseName_ReturnsNull()
     {
         // Two different folders that share the base name "app" collide on rootName

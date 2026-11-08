@@ -46,6 +46,24 @@ function Remove-SessionsTerminalRecord {
     catch { }
 }
 
+# Closing a terminal tab often kills the shell before the exit handler runs, so
+# records pile up, sweep the ones whose pid is no longer alive on each new shell
+function Remove-SessionsDeadRecords {
+    try {
+        if (-not (Test-Path $script:SessionsHookDir)) { return }
+
+        foreach ($file in Get-ChildItem -Path $script:SessionsHookDir -Filter '*.json' -File) {
+            $recordPid = 0
+            if ([int]::TryParse([System.IO.Path]::GetFileNameWithoutExtension($file.Name), [ref]$recordPid)) {
+                if ($null -eq (Get-Process -Id $recordPid -ErrorAction SilentlyContinue)) {
+                    Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
+    catch { }
+}
+
 # Refresh on every prompt so a cd is picked up, wrap any existing prompt rather
 # than replace it
 if (-not (Test-Path 'function:global:SessionsOriginalPrompt')) {
@@ -66,5 +84,7 @@ Register-EngineEvent -SourceIdentifier ([System.Management.Automation.PsEngineEv
     Remove-SessionsTerminalRecord
 } | Out-Null
 
-# Write once now so the shell is recorded before the first prompt
+# Prune stale records from shells that have closed, then record this shell before
+# the first prompt
+Remove-SessionsDeadRecords
 Write-SessionsTerminalRecord

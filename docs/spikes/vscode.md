@@ -39,9 +39,18 @@ Findings behind the VS Code adapter, gathered on 2026-11-08 from the storage fil
 No, it is not live, the file was last written at 22:37 while VS Code was still running at 22:52, a 15-minute lag, VS Code writes `windowsState` when a window opens or closes and on a clean exit, not continuously
 
 Consequences for the adapter:
-- the folder/workspace binding for a window that is currently open is reliable, because the file was written when that window opened
 - `uiState` geometry is stale and must not be trusted, we read live position from the window handle instead
-- a window opened after the last write will not appear until the next open/close/exit, in practice every open window triggered a write when it opened, so open windows are represented
+- `windowsState` does NOT reliably list every open window (correction, found later in testing): observed `lastActiveWindow` pointing at `eth-uvm-tb` with `openedWindows` empty while a second `sessions` window was open, so capturing the `sessions` window from `windowsState` alone failed, the folder binding is only reliable for whatever window happens to be recorded
+
+### Fallback source, the recently opened list (state.vscdb)
+
+Because `windowsState` is stale and often lists only one window, the adapter falls back to VS Code's
+recently opened list, which is more complete and more current:
+- it lives in `%APPDATA%\Code\User\globalStorage\state.vscdb`, a SQLite DB, under the `ItemTable` key `history.recentlyOpenedPathsList`
+- the value is JSON, `{ "entries": [ { "folderUri": "file:///..." }, { "workspace": { "configPath": "file:///....code-workspace" } }, { "fileUri": "file:///..." } ] }`, ordered most-recent first
+- `folderUri` and `workspace.configPath` are decoded the same way as `windowsState`, `fileUri` entries are recently opened files (not folders) and are skipped, `vscode-remote://` entries are remote and skipped (no local path to reopen)
+- the DB is open and WAL-mode under a running VS Code, so copy the file to a temp path and read the copy read-only rather than locking the live DB, a copy of the main file is a consistent older snapshot which is enough
+- resolution order is `windowsState` first (precise), then the recent list, both run through the same title to rootName match, a basename that is ambiguous across the recent history still returns null (safe)
 
 ## Title format for open folders
 

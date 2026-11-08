@@ -10,6 +10,9 @@ public interface IShell
     // Opens the new-session dialog; returns the saved session, or null if cancelled
     Session? ShowNewSessionDialog();
 
+    // Opens the add-windows picker; returns the chosen windows, or null if cancelled
+    IReadOnlyList<WindowInfo>? ShowAddWindowsDialog();
+
     // Shows the outcome of restoring each entry
     void ShowRestoreResults(string sessionName, IReadOnlyList<RestoreResult> results);
 

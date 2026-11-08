@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Data.Sqlite;
 
 namespace Sessions.Core;
 
@@ -12,20 +13,23 @@ public sealed class VsCodeAdapter : IAdapter
     private const string CodeExeName = "Code.exe";
 
     private readonly Func<string?> _readStorageJson;
+    private readonly Func<string?> _readRecentJson;
     private readonly IWindowWaiter _waiter;
     private readonly IWindowPlacer _placer;
     private readonly Action<string> _launch;
 
     public VsCodeAdapter()
-        : this(ReadDefaultStorage, new WindowWaiter(), new WindowPlacer(), LaunchCode) { }
+        : this(ReadDefaultStorage, ReadDefaultRecentPaths, new WindowWaiter(), new WindowPlacer(), LaunchCode) { }
 
     public VsCodeAdapter(
         Func<string?> readStorageJson,
+        Func<string?> readRecentJson,
         IWindowWaiter waiter,
         IWindowPlacer placer,
         Action<string> launch)
     {
         _readStorageJson = readStorageJson ?? throw new ArgumentNullException(nameof(readStorageJson));
+        _readRecentJson = readRecentJson ?? throw new ArgumentNullException(nameof(readRecentJson));
         _waiter = waiter ?? throw new ArgumentNullException(nameof(waiter));
         _placer = placer ?? throw new ArgumentNullException(nameof(placer));
         _launch = launch ?? throw new ArgumentNullException(nameof(launch));
@@ -35,6 +39,12 @@ public sealed class VsCodeAdapter : IAdapter
     public static string DefaultStoragePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "Code", "User", "globalStorage", "storage.json");
+
+    // %APPDATA%\Code\User\globalStorage\state.vscdb, the SQLite store that holds the
+    // recently opened list
+    public static string DefaultStateDbPath => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Code", "User", "globalStorage", "state.vscdb");
 
     public string Id => "vscode";
 
@@ -46,16 +56,28 @@ public sealed class VsCodeAdapter : IAdapter
     {
         ArgumentNullException.ThrowIfNull(window);
 
-        string? json = _readStorageJson();
-        var windows = json is null
+        // windowsState is precise but written lazily (often stale or empty), try it
+        // first, then fall back to the recently opened list which is more current
+        string? storageJson = _readStorageJson();
+        var windowsStateWindows = storageJson is null
             ? Array.Empty<VsCodeWindow>()
-            : VsCodeStorage.ParseWindows(json);
+            : VsCodeStorage.ParseWindows(storageJson);
 
-        string? path = VsCodeStorage.Resolve(window.Title, windows);
+        string? path = VsCodeStorage.Resolve(window.Title, windowsStateWindows);
+
+        if (path is null)
+        {
+            string? recentJson = _readRecentJson();
+            if (recentJson is not null)
+            {
+                path = VsCodeStorage.Resolve(window.Title, VsCodeStorage.ParseRecentFolders(recentJson));
+            }
+        }
+
         if (path is null)
         {
             throw new CaptureException(
-                $"{window.Title}: couldn't resolve the VS Code folder from windowsState.");
+                $"{window.Title}: couldn't resolve the VS Code folder from windowsState or the recent list.");
         }
 
         return new VsCodeEntry(DisplayNameFor(path), window.Placement, path);
@@ -110,6 +132,49 @@ public sealed class VsCodeAdapter : IAdapter
         catch (IOException)
         {
             return null;
+        }
+    }
+
+    // Reads the recently opened list value out of state.vscdb, the DB is open and
+    // WAL-mode under a running VS Code, so copy it to a temp file and read the copy
+    // (a consistent snapshot of the main file) rather than locking the live DB
+    private const string RecentPathsKey = "history.recentlyOpenedPathsList";
+
+    private static string? ReadDefaultRecentPaths()
+    {
+        if (!File.Exists(DefaultStateDbPath))
+        {
+            return null;
+        }
+
+        string temp = Path.Combine(Path.GetTempPath(), $"sessions-vscdb-{Guid.NewGuid():N}.db");
+        try
+        {
+            File.Copy(DefaultStateDbPath, temp, overwrite: true);
+
+            using var connection = new SqliteConnection($"Data Source={temp};Mode=ReadOnly");
+            connection.Open();
+
+            using SqliteCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT value FROM ItemTable WHERE key = $key";
+            command.Parameters.AddWithValue("$key", RecentPathsKey);
+
+            return command.ExecuteScalar() as string;
+        }
+        catch (Exception ex) when (ex is IOException or SqliteException)
+        {
+            return null;
+        }
+        finally
+        {
+            try
+            {
+                File.Delete(temp);
+            }
+            catch (IOException)
+            {
+                // Temp cleanup is best-effort
+            }
         }
     }
 

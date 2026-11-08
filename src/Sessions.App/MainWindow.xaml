@@ -39,6 +39,9 @@
                 </MenuItem>
                 <MenuItem Header="_Session">
                     <MenuItem Header="Load" InputGestureText="Ctrl+L" Command="{Binding LoadCommand}"/>
+                    <MenuItem Header="Add Apps…" Command="{Binding AddAppsCommand}"/>
+                    <MenuItem Header="Remove App" Command="{Binding RemoveEntryCommand}"/>
+                    <Separator/>
                     <MenuItem Header="Delete" InputGestureText="Del" Command="{Binding DeleteCommand}"/>
                 </MenuItem>
             </Menu>
@@ -124,33 +127,64 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                        <TextBlock Text="{Binding SelectedSession.Name}" Style="{StaticResource TitleText}"
-                                   TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Text="{Binding SelectedSession.Subtitle}" Style="{StaticResource SecondaryText}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{Binding SelectedSession.Name}" Style="{StaticResource TitleText}"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding SelectedSession.Subtitle}" Style="{StaticResource SecondaryText}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Button Content="Add Apps" Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding AddAppsCommand}" Margin="0,0,8,0"
+                                    AutomationProperties.Name="Add apps to this session"/>
+                            <Button Content="Remove" Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding RemoveEntryCommand}"
+                                    AutomationProperties.Name="Remove selected app from this session"/>
+                        </StackPanel>
+                    </Grid>
 
                     <ListView Grid.Row="1" ItemsSource="{Binding Entries}"
+                              SelectedItem="{Binding SelectedEntry}" SelectionMode="Single"
                               BorderThickness="0" Background="Transparent"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               AutomationProperties.Name="Apps in this session">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <ContextMenu.Resources>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource AppMenuItem}"/>
+                                </ContextMenu.Resources>
+                                <MenuItem Header="Remove from Session" Command="{Binding RemoveEntryCommand}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                 <Setter Property="Padding" Value="0"/>
                                 <Setter Property="Margin" Value="0"/>
-                                <Setter Property="Focusable" Value="False"/>
                                 <Setter Property="Background" Value="Transparent"/>
+                                <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnEntryRightClick"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListViewItem">
-                                            <Border Background="{TemplateBinding Background}" Padding="0">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="0">
                                                 <ContentPresenter/>
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource BadgeBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>

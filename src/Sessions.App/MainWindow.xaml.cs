@@ -18,6 +18,15 @@ public partial class MainWindow : Window, IShell
 
     private void OnExitClick(object sender, RoutedEventArgs e) => Close();
 
+    // Select the row under a right-click so the context menu acts on it
+    private void OnEntryRightClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is System.Windows.Controls.ListViewItem item)
+        {
+            item.IsSelected = true;
+        }
+    }
+
     public Session? ShowNewSessionDialog()
     {
         JsonSessionStore store = new(JsonSessionStore.DefaultDirectory);
@@ -28,6 +37,16 @@ public partial class MainWindow : Window, IShell
         NewSessionDialog dialog = new(new NewSessionViewModel(store, registry)) { Owner = this };
         dialog.ShowDialog();
         return dialog.SavedSession;
+    }
+
+    public IReadOnlyList<WindowInfo>? ShowAddWindowsDialog()
+    {
+        AdapterRegistry registry = new(
+            new IAdapter[] { new VsCodeAdapter(), new TerminalAdapter() },
+            new GenericAdapter());
+
+        AddWindowsDialog dialog = new(new AddWindowsViewModel(registry)) { Owner = this };
+        return dialog.ShowDialog() == true ? dialog.SelectedWindows : null;
     }
 
     public void ShowRestoreResults(string sessionName, IReadOnlyList<RestoreResult> results)

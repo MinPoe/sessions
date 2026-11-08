@@ -14,6 +14,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly AdapterRegistry _registry;
 
     private SessionRow? _selectedSession;
+    private EntryRow? _selectedEntry;
     private string _statusMessage = string.Empty;
 
     public MainViewModel(IShell shell, JsonSessionStore? store = null)
@@ -29,6 +30,8 @@ public sealed class MainViewModel : ObservableObject
         DeleteCommand = new RelayCommand(DeleteSession, () => SelectedSession is not null);
         ExportCommand = new RelayCommand(ExportSession, () => SelectedSession is not null);
         ImportCommand = new RelayCommand(ImportSession);
+        AddAppsCommand = new RelayCommand(AddApps, () => SelectedSession is not null);
+        RemoveEntryCommand = new RelayCommand(RemoveEntry, () => SelectedEntry is not null);
 
         RefreshSessions();
     }
@@ -49,6 +52,12 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
+    public EntryRow? SelectedEntry
+    {
+        get => _selectedEntry;
+        set => SetProperty(ref _selectedEntry, value);
+    }
+
     public string StatusMessage
     {
         get => _statusMessage;
@@ -62,6 +71,8 @@ public sealed class MainViewModel : ObservableObject
     public ICommand DeleteCommand { get; }
     public ICommand ExportCommand { get; }
     public ICommand ImportCommand { get; }
+    public ICommand AddAppsCommand { get; }
+    public ICommand RemoveEntryCommand { get; }
 
     private void RefreshSessions(Guid? select = null)
     {
@@ -89,6 +100,7 @@ public sealed class MainViewModel : ObservableObject
 
     private void UpdateEntries()
     {
+        SelectedEntry = null;
         Entries.Clear();
         if (SelectedSession is null)
         {
@@ -99,6 +111,71 @@ public sealed class MainViewModel : ObservableObject
         {
             Entries.Add(new EntryRow(entry));
         }
+    }
+
+    // Adds currently open windows to the selected session, captures the chosen
+    // windows through the registry and appends the new entries
+    private void AddApps()
+    {
+        if (SelectedSession is not { } row)
+        {
+            return;
+        }
+
+        IReadOnlyList<WindowInfo>? windows = _shell.ShowAddWindowsDialog();
+        if (windows is null || windows.Count == 0)
+        {
+            return;
+        }
+
+        SessionCaptureService service = new(_registry, () => _store.List().Sessions.Select(s => s.Name));
+        (IReadOnlyList<Entry> entries, IReadOnlyList<CaptureFailure> failures) = service.CaptureEntries(windows);
+
+        if (entries.Count > 0)
+        {
+            Session updated = row.Session with { Entries = row.Session.Entries.Concat(entries).ToList() };
+            _store.Save(updated);
+            RefreshSessions(select: updated.Id);
+        }
+
+        StatusMessage = (entries.Count, failures.Count) switch
+        {
+            (0, _) => "No windows could be added.",
+            (var added, 0) => $"Added {added} app{(added == 1 ? "" : "s")}.",
+            (var added, var failed) => $"Added {added} app{(added == 1 ? "" : "s")}, {failed} couldn't be captured.",
+        };
+    }
+
+    // Removes the selected entry from the selected session
+    private void RemoveEntry()
+    {
+        if (SelectedSession is not { } row || SelectedEntry is not { } entryRow)
+        {
+            return;
+        }
+
+        int index = Entries.IndexOf(entryRow);
+        if (index < 0)
+        {
+            return;
+        }
+
+        bool proceed = _shell.Confirm(
+            "Remove App",
+            $"Remove “{entryRow.DisplayName}” from “{row.Name}”?",
+            confirmLabel: "Remove",
+            destructive: true);
+
+        if (!proceed)
+        {
+            return;
+        }
+
+        var remaining = row.Session.Entries.Where((_, i) => i != index).ToList();
+        Session updated = row.Session with { Entries = remaining };
+        _store.Save(updated);
+        RefreshSessions(select: updated.Id);
+        StatusMessage = $"Removed “{entryRow.DisplayName}”.";
     }
 
     private void NewSession()
