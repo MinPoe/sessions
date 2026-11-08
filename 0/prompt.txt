@@ -1,0 +1,9 @@
+are you able to add png logos beside the saved apps? can you inherit it from the apps it saves?
+
+---
+
+works now, nice
+
+---
+
+[Image #4] the assets load everywhere but this
