@@ -1,0 +1,175 @@
+<pasted_content id="00aa">
+UI
+
+**23. `feat(app): main window layout`**
+- Left session `ListBox`, right entry `ListView`, buttons New / Load / Delete / Export / Import (disabled for now).
+
+**24. `feat(app): add RelayCommand and MainViewModel`**
+- `INotifyPropertyChanged`, `RelayCommand`; ViewModel loads sessions from the store and shows the selected session's entries.
+- Done when: sessions saved to the folder by hand appear in the list.
+
+**25. `feat(app): new session dialog with window checklist`**
+- Lists enumerated windows with icon (`Icon.ExtractAssociatedIcon`), title, adapter badge; unsupported windows shown but not selectable, with the reason.
+
+**26. `feat(app): save a new session`**
+- Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.
+
+**27. `feat(app): load session with result dialog`**
+- Load runs `RestoreRunner`; `RestoreResultDialog` shows each entry with text and icon for success or failure.
+- Done when (manual): save, close the apps, load, positions match.
+
+**28. `feat(app): delete session with confirmation`**
+- Confirmation dialog, then `Delete`; list refreshes.
+
+**29. `feat(app): export and import session`**
+- Export copies the JSON via a save dialog; import validates `SchemaVersion`, assigns a new `Id` on collision, saves.
+
+**30. `feat(app): accessibility pass`**
+- `AutomationProperties.Name` on all controls; keyboard navigation and visible focus; status never by color alone.
+</pasted_content id="00aa">
+
+---
+
+UI
+
+**23. `feat(app): main window layout`**
+- Left session `ListBox`, right entry `ListView`, buttons New / Load / Delete / Export / Import (disabled for now).
+
+**24. `feat(app): add RelayCommand and MainViewModel`**
+- `INotifyPropertyChanged`, `RelayCommand`; ViewModel loads sessions from the store and shows the selected session's entries.
+- Done when: sessions saved to the folder by hand appear in the list.
+
+**25. `feat(app): new session dialog with window checklist`**
+- Lists enumerated windows with icon (`Icon.ExtractAssociatedIcon`), title, adapter badge; unsupported windows shown but not selectable, with the reason.
+
+**26. `feat(app): save a new session`**
+- Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.
+
+**27. `feat(app): load session with result dialog`**
+- Load runs `RestoreRunner`; `RestoreResultDialog` shows each entry with text and icon for success or failure.
+- Done when (manual): save, close the apps, load, positions match.
+
+**28. `feat(app): delete session with confirmation`**
+- Confirmation dialog, then `Delete`; list refreshes.
+
+**29. `feat(app): export and import session`**
+- Export copies the JSON via a save dialog; import validates `SchemaVersion`, assigns a new `Id` on collision, saves.
+
+**30. `feat(app): accessibility pass`**
+- `AutomationProperties.Name` on all controls; keyboard navigation and visible focus; status never by color alone.
+
+adopt apple's ui design, keep it simple and don't overdesign anything.
+
+---
+
+UI
+
+**23. `feat(app): main window layout`**
+- Left session `ListBox`, right entry `ListView`, buttons New / Load / Delete / Export / Import (disabled for now).
+
+**24. `feat(app): add RelayCommand and MainViewModel`**
+- `INotifyPropertyChanged`, `RelayCommand`; ViewModel loads sessions from the store and shows the selected session's entries.
+- Done when: sessions saved to the folder by hand appear in the list.
+
+**25. `feat(app): new session dialog with window checklist`**
+- Lists enumerated windows with icon (`Icon.ExtractAssociatedIcon`), title, adapter badge; unsupported windows shown but not selectable, with the reason.
+
+**26. `feat(app): save a new session`**
+- Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.
+
+**27. `feat(app): load session with result dialog`**
+- Load runs `RestoreRunner`; `RestoreResultDialog` shows each entry with text and icon for success or failure.
+- Done when (manual): save, close the apps, load, positions match.
+
+**28. `feat(app): delete session with confirmation`**
+- Confirmation dialog, then `Delete`; list refreshes.
+
+**29. `feat(app): export and import session`**
+- Export copies the JSON via a save dialog; import validates `SchemaVersion`, assigns a new `Id` on collision, saves.
+
+**30. `feat(app): accessibility pass`**
+- `AutomationProperties.Name` on all controls; keyboard navigation and visible focus; status never by color alone.
+
+adopt apple's ui design, keep it simple and don't overdesign anything
+
+---
+
+UI
+
+**23. `feat(app): main window layout`**
+- Left session `ListBox`, right entry `ListView`, buttons New / Load / Delete / Export / Import (disabled for now).
+
+**24. `feat(app): add RelayCommand and MainViewModel`**
+- `INotifyPropertyChanged`, `RelayCommand`; ViewModel loads sessions from the store and shows the selected session's entries.
+- Done when: sessions saved to the folder by hand appear in the list.
+
+**25. `feat(app): new session dialog with window checklist`**
+- Lists enumerated windows with icon (`Icon.ExtractAssociatedIcon`), title, adapter badge; unsupported windows shown but not selectable, with the reason.
+
+**26. `feat(app): save a new session`**
+- Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.
+
+**27. `feat(app): load session with result dialog`**
+- Load runs `RestoreRunner`; `RestoreResultDialog` shows each entry with text and icon for success or failure.
+- Done when (manual): save, close the apps, load, positions match.
+
+**28. `feat(app): delete session with confirmation`**
+- Confirmation dialog, then `Delete`; list refreshes.
+
+**29. `feat(app): export and import session`**
+- Export copies the JSON via a save dialog; import validates `SchemaVersion`, assigns a new `Id` on collision, saves.
+
+**30. `feat(app): accessibility pass`**
+- `AutomationProperties.Name` on all controls; keyboard navigation and visible focus; status never by color alone.
+
+adopt apple's ui design, keep it simple and don't overdesign anything
+
+---
+
+npx skills add dickwu/apple-design-skill
+
+---
+
+<pasted_content id="00aa">
+UI
+
+  **23. `feat(app): main window layout`**
+  - Left session `ListBox`, right entry `ListView`, buttons New / Load / Delete / Export / Import (disabled for now).
+
+  **24. `feat(app): add RelayCommand and MainViewModel`**
+  - `INotifyPropertyChanged`, `RelayCommand`; ViewModel loads sessions from the store and shows the selected session's entries.
+  - Done when: sessions saved to the folder by hand appear in the list.
+
+  **25. `feat(app): new session dialog with window checklist`**
+  - Lists enumerated windows with icon (`Icon.ExtractAssociatedIcon`), title, adapter badge; unsupported windows shown but not selectable, with the reason.
+
+  - Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.                                                                                 
+                                                                                                                                                                                                      
+  27. feat(app): load session with result dialog                                                                                                                                                      
+  - Load runs RestoreRunner; RestoreResultDialog shows each entry with text and icon for success or failure.                                                                                          
+  **26. `feat(app): save a new session`**
+  - Name box and Save wired to the capture service and store; per-entry failures shown in the dialog; list refreshes.
+
+  **27. `feat(app): load session with result dialog`**
+  - Load runs `RestoreRunner`; `RestoreResultDialog` shows each entry with text and icon for success or failure.
+  - Done when (manual): save, close the apps, load, positions match.
+
+  **28. `feat(app): delete session with confirmation`**
+  - Confirmation dialog, then `Delete`; list refreshes.
+
+  **29. `feat(app): export and import session`**
+  - Export copies the JSON via a save dialog; import validates `SchemaVersion`, assigns a new `Id` on collision, saves.
+
+  **30. `feat(app): accessibility pass`**
+  - `AutomationProperties.Name` on all controls; keyboard navigation and visible focus; status never by color alone.
+
+  adopt apple's ui design, keep it simple and don't overdesign anything
+</pasted_content id="00aa">
+
+---
+
+continue adding the menu bar and dark mode as well
+
+---
+
+make documentation/comments changes: remove all full stops. if needed, simply replace with comma
