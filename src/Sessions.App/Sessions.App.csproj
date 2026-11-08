@@ -12,6 +12,8 @@
     <UseWPF>true</UseWPF>
     <!-- Allows restore/build on non-Windows hosts; no effect on Windows. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Per-monitor DPI awareness (PerMonitorV2) declared in the manifest. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
 </Project>
