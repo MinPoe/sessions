@@ -2,7 +2,7 @@ using System.IO;
 
 namespace Sessions.Core;
 
-// Dead-simple append-only file log, one timestamped line per call.
+// Dead-simple append-only file log, one timestamped line per call
 public static class Log
 {
     // %APPDATA%\Sessions\log.txt

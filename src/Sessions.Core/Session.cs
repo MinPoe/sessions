@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Sessions.Core;
 
-// A named, persisted collection of entries to launch together.
+// A named, persisted collection of entries to launch together
 public sealed record Session(
     int SchemaVersion,
     Guid Id,
@@ -11,11 +11,11 @@ public sealed record Session(
     DateTimeOffset CreatedAt,
     IReadOnlyList<Entry> Entries)
 {
-    // Bump when the on-disk shape changes; Load rejects anything it doesn't know.
+    // Bump when the on-disk shape changes; Load rejects anything it doesn't know
     public const int CurrentSchemaVersion = 1;
 
     // Compare Entries by sequence; the default record equality is by reference,
-    // which breaks round-trips (Entry[] in, List<Entry> out).
+    // which breaks round-trips (Entry[] in, List<Entry> out)
     public bool Equals(Session? other) =>
         other is not null &&
         SchemaVersion == other.SchemaVersion &&

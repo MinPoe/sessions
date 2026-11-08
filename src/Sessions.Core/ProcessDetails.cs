@@ -7,15 +7,15 @@ using Windows.Win32.System.Threading;
 namespace Sessions.Core;
 
 // Reads what we can about a process behind a window: its executable path (Win32
-// API) and its command line + parent pid (WMI). Each returns null on failure
-// rather than throwing, so one unreadable process never sinks enumeration.
+// API) and its command line + parent pid (WMI), each returns null on failure
+// rather than throwing, so one unreadable process never sinks enumeration
 internal static class ProcessDetails
 {
     private const int ERROR_ACCESS_DENIED = 5;
 
-    // Full image path via the Win32 API. On failure, exePath is null and reason
-    // explains why (no guessing a path). AccessDenied is true when the open was
-    // refused — a strong hint the target runs elevated or is protected.
+    // Full image path via the Win32 API, on failure, exePath is null and reason
+    // explains why (no guessing a path), AccessDenied is true when the open was
+    // refused — a strong hint the target runs elevated or is protected
     public static (string? ExePath, string? Reason, bool AccessDenied) ReadExePath(uint processId)
     {
         using var handle = PInvoke.OpenProcess_SafeHandle(
@@ -39,8 +39,8 @@ internal static class ProcessDetails
         return (buffer[..(int)size].ToString(), null, false);
     }
 
-    // CommandLine and ParentProcessId from Win32_Process. An empty command line
-    // comes back as null; adapters decide whether that's an error.
+    // CommandLine and ParentProcessId from Win32_Process, an empty command line
+    // comes back as null; adapters decide whether that's an error
     public static (string? CommandLine, uint? ParentProcessId) ReadWmi(uint processId)
     {
         try
@@ -68,7 +68,7 @@ internal static class ProcessDetails
         }
         catch (ManagementException)
         {
-            // WMI unavailable or access denied — leave both unknown.
+            // WMI unavailable or access denied — leave both unknown
         }
 
         return (null, null);

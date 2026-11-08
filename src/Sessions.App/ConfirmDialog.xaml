@@ -1,0 +1,21 @@
+﻿<Window x:Class="Sessions.App.ConfirmDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        SizeToContent="Height" Width="400" ShowInTaskbar="False"
+        Background="{DynamicResource SurfaceBrush}"
+        FontFamily="{StaticResource UIFont}" FontSize="{StaticResource FontSizeBody}"
+        Title="Confirm">
+    <StackPanel Margin="24">
+        <TextBlock x:Name="TitleBlock" Style="{StaticResource TitleText}" FontSize="16" TextWrapping="Wrap"/>
+        <TextBlock x:Name="MessageBlock" Style="{StaticResource SecondaryText}"
+                   FontSize="13" Margin="0,8,0,20"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Style="{StaticResource SecondaryButton}"
+                    Content="Cancel" MinWidth="88" Margin="0,0,10,0"
+                    IsCancel="True" Click="OnCancel"/>
+            <Button x:Name="ConfirmButton" Style="{StaticResource PrimaryButton}"
+                    Content="OK" MinWidth="88" IsDefault="True" Click="OnConfirm"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -27,7 +27,7 @@ public class RestoreRunnerTests
         Assert.Equal("boom", results[1].ErrorMessage);
         Assert.True(results[2].Success);
 
-        // The failure didn't stop the third entry from being restored.
+        // The failure didn't stop the third entry from being restored
         Assert.Equal(2, ok.RestoreCount);
         Assert.Equal(1, bad.RestoreCount);
     }

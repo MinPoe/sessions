@@ -124,4 +124,49 @@ public class JsonSessionStoreTests : IDisposable
     {
         Assert.Throws<FileNotFoundException>(() => _store.Delete(Guid.NewGuid()));
     }
+
+    [Fact]
+    public void Export_ThenImport_IntoAnotherStore_RoundTrips()
+    {
+        Guid id = Guid.NewGuid();
+        Session session = NewSession(id);
+        _store.Save(session);
+
+        string exportPath = Path.Combine(_dir, "exported.json");
+        _store.Export(id, exportPath);
+
+        string otherDir = Path.Combine(_dir, "other");
+        JsonSessionStore other = new(otherDir);
+        Session imported = other.Import(exportPath);
+
+        Assert.Equal(id, imported.Id); // no collision in the empty store
+        Assert.Equal(session, other.Load(id));
+    }
+
+    [Fact]
+    public void Import_IdCollision_AssignsNewId()
+    {
+        Guid id = Guid.NewGuid();
+        _store.Save(NewSession(id));
+
+        string exportPath = Path.Combine(_dir, "exported.json");
+        _store.Export(id, exportPath);
+
+        // Importing back into the same store collides, so a fresh id is assigned
+        Session imported = _store.Import(exportPath);
+
+        Assert.NotEqual(id, imported.Id);
+        Assert.Equal(2, _store.List().Sessions.Count);
+    }
+
+    [Fact]
+    public void Import_UnknownSchemaVersion_Throws()
+    {
+        string path = Path.Combine(_dir, "bad.json");
+        Directory.CreateDirectory(_dir);
+        _store.Save(NewSession(Guid.NewGuid(), schemaVersion: 42));
+        File.Copy(Directory.GetFiles(_dir, "*.json")[0], path);
+
+        Assert.Throws<InvalidDataException>(() => new JsonSessionStore(Path.Combine(_dir, "dest")).Import(path));
+    }
 }

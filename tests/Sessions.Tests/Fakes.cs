@@ -2,14 +2,14 @@ using Sessions.Core;
 
 namespace Sessions.Tests;
 
-// A minimal entry tied to a given adapter id, for exercising adapters/runners.
+// A minimal entry tied to a given adapter id, for exercising adapters/runners
 internal sealed record FakeEntry(string DisplayName, string AdapterIdValue)
     : Entry(DisplayName, Placement: null)
 {
     public override string AdapterId => AdapterIdValue;
 }
 
-// Configurable adapter: records whether it was asked to restore, and can fail.
+// Configurable adapter: records whether it was asked to restore, and can fail
 internal sealed class FakeAdapter : IAdapter
 {
     private readonly bool _canHandle;

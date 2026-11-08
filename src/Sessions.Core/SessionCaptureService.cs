@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace Sessions.Core;
 
-// A window that couldn't be captured, with the reason.
+// A window that couldn't be captured, with the reason
 public sealed record CaptureFailure(WindowInfo Window, string Reason);
 
-// The result of capturing a session: the built session plus any per-window failures.
+// The result of capturing a session: the built session plus any per-window failures
 public sealed record SessionCaptureResult(Session Session, IReadOnlyList<CaptureFailure> Failures);
 
 // Builds a Session from the user's selected windows, using the first matching
-// adapter per window and collecting (rather than throwing on) per-window failures.
+// adapter per window and collecting (rather than throwing on) per-window failures
 public sealed class SessionCaptureService
 {
     private readonly AdapterRegistry _registry;

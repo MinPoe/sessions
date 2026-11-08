@@ -4,7 +4,7 @@ namespace Sessions.Tests;
 
 public class WindowPlacerTests
 {
-    // A 1920x1040 work area (taskbar at the bottom).
+    // A 1920x1040 work area (taskbar at the bottom)
     private static readonly ScreenRect Work = new(0, 0, 1920, 1040);
 
     [Fact]

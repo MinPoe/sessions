@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace Sessions.Core;
 
-// Outcome of restoring a single entry.
+// Outcome of restoring a single entry
 public sealed record RestoreResult(Entry Entry, bool Success, string? ErrorMessage);
 
 // Restores a session's entries one at a time, continuing past failures and
-// reporting the outcome of each.
+// reporting the outcome of each
 public sealed class RestoreRunner
 {
     private readonly AdapterRegistry _registry;

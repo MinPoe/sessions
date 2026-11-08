@@ -3,11 +3,11 @@ using System.Threading;
 
 namespace Sessions.Core;
 
-// Waits for a newly opened top-level window belonging to a given executable.
+// Waits for a newly opened top-level window belonging to a given executable
 public interface IWindowWaiter
 {
     // Returns the handle of a window of exePath that wasn't already open, or
-    // throws RestoreException if none appears within the timeout.
+    // throws RestoreException if none appears within the timeout
     nint WaitForNewWindow(string exePath, string displayName);
 }
 
@@ -19,7 +19,7 @@ public sealed class WindowWaiter : IWindowWaiter
     public nint WaitForNewWindow(string exePath, string displayName)
     {
         // Snapshot the windows of this exe that already exist, so we only match
-        // one that opens after launch.
+        // one that opens after launch
         HashSet<nint> existing = HandlesForExe(exePath);
 
         DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(TimeoutSeconds);

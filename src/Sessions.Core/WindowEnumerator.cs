@@ -8,8 +8,8 @@ using Windows.Win32.UI.WindowsAndMessaging;
 namespace Sessions.Core;
 
 // Enumerates the "real" top-level windows: visible, titled, unowned, not tool
-// windows, not cloaked, not our own, and not the desktop shell. These are the
-// ones worth offering the user to capture/place, enriched with process details.
+// windows, not cloaked, not our own, and not the desktop shell, these are the
+// ones worth offering the user to capture/place, enriched with process details
 public static class WindowEnumerator
 {
     public static IReadOnlyList<WindowInfo> Enumerate()
@@ -33,7 +33,7 @@ public static class WindowEnumerator
     }
 
     // Lightweight listing of visible top-level window handles with their pid,
-    // without the process/WMI enrichment Enumerate() does. Used for polling.
+    // without the process/WMI enrichment Enumerate() does, used for polling
     internal static List<(HWND Handle, uint ProcessId)> EnumerateVisibleHandles()
     {
         List<(HWND, uint)> handles = new();
@@ -68,14 +68,14 @@ public static class WindowEnumerator
             return false;
         }
 
-        // Skip owned windows (dialogs, tool palettes, etc.).
+        // Skip owned windows (dialogs, tool palettes, etc.)
         if (!PInvoke.GetWindow(hwnd, GET_WINDOW_CMD.GW_OWNER).IsNull)
         {
             return false;
         }
 
-        // Skip tool windows, which aren't meant to appear in the alt-tab list.
-        // The extended style flags all fit in the low 32 bits, so GetWindowLong is enough.
+        // Skip tool windows, which aren't meant to appear in the alt-tab list,
+        // the extended style flags all fit in the low 32 bits, so GetWindowLong is enough
         const uint WS_EX_TOOLWINDOW = 0x00000080;
         int exStyle = PInvoke.GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         if (((uint)exStyle & WS_EX_TOOLWINDOW) != 0)
@@ -84,7 +84,7 @@ public static class WindowEnumerator
         }
 
         // Skip app-cloaked windows (e.g. suspended UWP apps), but keep windows
-        // cloaked only by the shell for being on another virtual desktop.
+        // cloaked only by the shell for being on another virtual desktop
         if (IsAppCloaked(hwnd))
         {
             return false;
@@ -96,7 +96,7 @@ public static class WindowEnumerator
             return false;
         }
 
-        // Skip the desktop shell's own window.
+        // Skip the desktop shell's own window
         if (title == "Program Manager")
         {
             return false;
@@ -108,7 +108,7 @@ public static class WindowEnumerator
             _ = PInvoke.GetWindowThreadProcessId(hwnd, &processId);
         }
 
-        // Skip our own windows.
+        // Skip our own windows
         if (processId == ownProcessId)
         {
             return false;
@@ -127,7 +127,7 @@ public static class WindowEnumerator
             IsElevated = accessDenied,
         };
 
-        // Let the classifier have the final say on why (if at all) it's unsupported.
+        // Let the classifier have the final say on why (if at all) it's unsupported
         info = info with { UnsupportedReason = WindowClassifier.GetUnsupportedReason(info) };
         return true;
     }
@@ -162,7 +162,7 @@ public static class WindowEnumerator
                 return false;
             }
 
-            // Keep windows cloaked only because they're on another virtual desktop.
+            // Keep windows cloaked only because they're on another virtual desktop
             return cloaked != DWM_CLOAKED_SHELL;
         }
     }
@@ -175,7 +175,7 @@ public static class WindowEnumerator
             return string.Empty;
         }
 
-        // +1 for the null terminator GetWindowText writes.
+        // +1 for the null terminator GetWindowText writes
         Span<char> buffer = length < 256 ? stackalloc char[length + 1] : new char[length + 1];
         unsafe
         {

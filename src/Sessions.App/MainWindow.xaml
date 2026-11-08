@@ -5,8 +5,207 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sessions.App"
         mc:Ignorable="d"
-        Title="Sessions" Height="450" Width="800">
-    <Grid>
+        Title="Sessions" Height="560" Width="880" MinWidth="680" MinHeight="420"
+        Background="{DynamicResource WindowBrush}"
+        FontFamily="{StaticResource UIFont}"
+        FontSize="{StaticResource FontSizeBody}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Ideal">
 
-    </Grid>
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewCommand}"/>
+        <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding LoadCommand}"/>
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding ExportCommand}"/>
+        <KeyBinding Key="I" Modifiers="Ctrl" Command="{Binding ImportCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+        <!-- ===================== Menu bar ===================== -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+            <Menu Style="{StaticResource AppMenu}" AutomationProperties.Name="Main menu">
+                <Menu.Resources>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource AppMenuItem}"/>
+                    <Style TargetType="Separator" BasedOn="{StaticResource AppMenuSeparator}"/>
+                </Menu.Resources>
+                <MenuItem Header="_File">
+                    <MenuItem Header="New Session" InputGestureText="Ctrl+N" Command="{Binding NewCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Import…" InputGestureText="Ctrl+I" Command="{Binding ImportCommand}"/>
+                    <MenuItem Header="Export…" InputGestureText="Ctrl+E" Command="{Binding ExportCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exit" Click="OnExitClick"/>
+                </MenuItem>
+                <MenuItem Header="_Session">
+                    <MenuItem Header="Load" InputGestureText="Ctrl+L" Command="{Binding LoadCommand}"/>
+                    <MenuItem Header="Delete" InputGestureText="Del" Command="{Binding DeleteCommand}"/>
+                </MenuItem>
+            </Menu>
+        </Border>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+        <!-- ===================== Toolbar ===================== -->
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="20,14">
+                <TextBlock Text="Sessions" Style="{StaticResource TitleText}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="New Session" Style="{StaticResource PrimaryButton}"
+                            Command="{Binding NewCommand}" Margin="0,0,16,0"
+                            AutomationProperties.Name="New Session"/>
+                    <Button Content="Load" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadCommand}" Margin="0,0,8,0"
+                            AutomationProperties.Name="Load selected session"/>
+                    <Button Content="Delete" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding DeleteCommand}" Margin="0,0,8,0"
+                            AutomationProperties.Name="Delete selected session"/>
+                    <Button Content="Export" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ExportCommand}" Margin="0,0,8,0"
+                            AutomationProperties.Name="Export selected session"/>
+                    <Button Content="Import" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ImportCommand}"
+                            AutomationProperties.Name="Import a session"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===================== Master / detail ===================== -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" MinWidth="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sessions sidebar -->
+            <Grid Grid.Column="0" Background="{DynamicResource SidebarBrush}">
+                <ListBox x:Name="SessionList"
+                         Style="{StaticResource SidebarListBox}"
+                         ItemContainerStyle="{StaticResource SidebarItem}"
+                         ItemsSource="{Binding Sessions}"
+                         SelectedItem="{Binding SelectedSession}"
+                         AutomationProperties.Name="Saved sessions">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:SessionRow}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontWeight="Medium"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Subtitle}" FontSize="12" Margin="0,2,0,0" Opacity="0.65"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Empty sidebar -->
+                <TextBlock Text="No sessions yet.&#x0a;Create one to get started."
+                           Style="{StaticResource SecondaryText}" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24"
+                           Visibility="{Binding HasNoSessions, Converter={StaticResource BoolToVisibility}}"/>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Center"
+                          Background="{DynamicResource SeparatorBrush}" ResizeBehavior="PreviousAndNext"/>
+
+            <!-- Detail -->
+            <Grid Grid.Column="2" Background="{DynamicResource SurfaceBrush}">
+                <!-- Selected session -->
+                <Grid Margin="24,20" Visibility="{Binding SelectedSession, Converter={StaticResource NotNullToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                        <TextBlock Text="{Binding SelectedSession.Name}" Style="{StaticResource TitleText}"
+                                   TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding SelectedSession.Subtitle}" Style="{StaticResource SecondaryText}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <ListView Grid.Row="1" ItemsSource="{Binding Entries}"
+                              BorderThickness="0" Background="Transparent"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              AutomationProperties.Name="Apps in this session">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Focusable" Value="False"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <Border Background="{TemplateBinding Background}" Padding="0">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:EntryRow}">
+                                <Border Padding="4,10" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Icon with placeholder -->
+                                        <Grid Grid.Column="0" Width="32" Height="32" Margin="0,0,12,0" VerticalAlignment="Center">
+                                            <Border Background="{DynamicResource BadgeBrush}" CornerRadius="6"
+                                                    Visibility="{Binding Icon, Converter={StaticResource NullToVisibility}}"/>
+                                            <Image Source="{Binding Icon}" Width="32" Height="32"
+                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Grid>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="Medium"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Detail}" Style="{StaticResource SecondaryText}"
+                                                       TextTrimming="CharacterEllipsis" Margin="0,1,0,0"/>
+                                            <TextBlock Text="{Binding Placement}" Style="{StaticResource SecondaryText}"
+                                                       FontSize="11" Margin="0,1,0,0"/>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="2" Style="{StaticResource Badge}" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding Adapter}" FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+
+                <!-- No selection -->
+                <TextBlock Text="Select a session to see its apps."
+                           Style="{StaticResource SecondaryText}" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Visibility="{Binding SelectedSession, Converter={StaticResource NullToVisibility}}"/>
+            </Grid>
+        </Grid>
+
+        <!-- ===================== Status line ===================== -->
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0"
+                Visibility="{Binding StatusMessage, Converter={StaticResource NotNullToVisibility}}">
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SecondaryText}"
+                       Margin="20,8" AutomationProperties.LiveSetting="Polite"/>
+        </Border>
+        </Grid>
+    </DockPanel>
 </Window>

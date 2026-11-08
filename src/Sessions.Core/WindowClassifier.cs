@@ -2,11 +2,11 @@ using System.IO;
 
 namespace Sessions.Core;
 
-// Decides whether a window can be captured/placed, and if not, says why.
-// Pure function of WindowInfo so it's easy to unit-test.
+// Decides whether a window can be captured/placed, and if not, says why,
+// pure function of WindowInfo so it's easy to unit-test
 public static class WindowClassifier
 {
-    // Returns a human-readable reason the window is unsupported, or null if it's fine.
+    // Returns a human-readable reason the window is unsupported, or null if it's fine
     public static string? GetUnsupportedReason(WindowInfo window)
     {
         if (window.IsElevated)
@@ -17,7 +17,7 @@ public static class WindowClassifier
         string? exePath = window.ExePath;
         if (exePath is null)
         {
-            // Carry forward whatever stopped us reading the process.
+            // Carry forward whatever stopped us reading the process
             return window.UnsupportedReason ?? "The owning process could not be inspected.";
         }
 

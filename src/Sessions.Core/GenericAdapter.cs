@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Sessions.Core;
 
 // The catch-all adapter: launches an executable with its captured command-line
-// arguments and restores its window placement.
+// arguments and restores its window placement
 public sealed class GenericAdapter : IAdapter
 {
     private readonly IWindowWaiter _waiter;
@@ -19,7 +19,7 @@ public sealed class GenericAdapter : IAdapter
 
     public string Id => "generic";
 
-    // Handles any window we consider supported.
+    // Handles any window we consider supported
     public bool CanHandle(WindowInfo window) => window.UnsupportedReason is null;
 
     public Entry Capture(WindowInfo window)
@@ -71,8 +71,8 @@ public sealed class GenericAdapter : IAdapter
         }
     }
 
-    // A captured command line is "<exe>" <args>. Strip the leading executable
-    // token and return the remainder; empty when there were no arguments.
+    // A captured command line is "<exe>" <args>, strip the leading executable
+    // token and return the remainder; empty when there were no arguments
     private static string ArgumentsFromCommandLine(string? commandLine, string exePath)
     {
         if (string.IsNullOrWhiteSpace(commandLine))

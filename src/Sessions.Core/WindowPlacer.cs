@@ -5,24 +5,24 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Sessions.Core;
 
-// A rectangle by edges, matching Win32 RECT semantics.
+// A rectangle by edges, matching Win32 RECT semantics
 public readonly record struct ScreenRect(int Left, int Top, int Right, int Bottom)
 {
     public int Width => Right - Left;
     public int Height => Bottom - Top;
 }
 
-// Applies a captured Placement to a live window.
+// Applies a captured Placement to a live window
 public interface IWindowPlacer
 {
-    // Positions hwnd per placement. Throws RestoreException if the target is elevated.
+    // Positions hwnd per placement, throws RestoreException if the target is elevated
     void Apply(nint hwnd, Placement placement, bool targetElevated);
 }
 
 public sealed class WindowPlacer : IWindowPlacer
 {
     // Pure, testable: shrink to fit and slide a (possibly off-screen) rectangle
-    // back onto the work area, preserving size where it fits.
+    // back onto the work area, preserving size where it fits
     public static Placement ClampToWorkArea(Placement placement, ScreenRect workArea)
     {
         int width = Math.Min(placement.Width, workArea.Width);
