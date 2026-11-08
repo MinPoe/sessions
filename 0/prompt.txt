@@ -1,0 +1,9 @@
+start with the stretch goals, the browser to work on is google chrome
+
+---
+
+wait what extension should i do?
+
+---
+
+ok extension is loaded, do i have to build anything?

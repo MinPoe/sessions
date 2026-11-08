@@ -1,0 +1,59 @@
+{
+  "cli_version": "0.13.1",
+  "checkpoint_id": "01M6Y6CTVR1QKRPA25VK1EJ5NN",
+  "strategy": "manual-commit",
+  "branch": "dev",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "README.md",
+    "Sessions.sln",
+    "docs/spikes/browser.md",
+    "extension/background.js",
+    "extension/manifest.json",
+    "src/Sessions.App/EntryRow.cs",
+    "src/Sessions.App/MainViewModel.cs",
+    "src/Sessions.App/MainWindow.xaml.cs",
+    "src/Sessions.BrowserHost/Program.cs",
+    "src/Sessions.BrowserHost/Sessions.BrowserHost.csproj",
+    "src/Sessions.Core/BrowserAdapter.cs",
+    "src/Sessions.Core/BrowserPipe.cs",
+    "src/Sessions.Core/BrowserTabsClient.cs",
+    "src/Sessions.Core/Entry.cs",
+    "src/Sessions.Core/NativeMessaging.cs",
+    "tests/Sessions.Tests/BrowserAdapterTests.cs",
+    "tests/Sessions.Tests/EntryTests.cs",
+    "tests/Sessions.Tests/NativeMessagingTests.cs",
+    "tools/browser-host/install.ps1",
+    "tools/browser-host/uninstall.ps1"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 100,
+    "cache_creation_tokens": 64528,
+    "cache_read_tokens": 14750813,
+    "output_tokens": 57144,
+    "api_call_count": 50
+  },
+  "redaction": {
+    "replacements": 11,
+    "layers": {
+      "betterleaks": 5,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 31,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  }
+}

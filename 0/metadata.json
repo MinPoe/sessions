@@ -1,0 +1,96 @@
+{
+  "cli_version": "0.13.1",
+  "checkpoint_id": "01M6Y6CTVR1QKRPA25VK1EJ5NN",
+  "session_id": "3fdead9a-2313-4930-84dc-637d68773cbd",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-08T18:23:12.4732017Z",
+  "branch": "dev",
+  "checkpoints_count": 3,
+  "save_step_count": 3,
+  "files_touched": [
+    "README.md",
+    "Sessions.sln",
+    "docs/spikes/browser.md",
+    "extension/background.js",
+    "extension/manifest.json",
+    "src/Sessions.App/EntryRow.cs",
+    "src/Sessions.App/MainViewModel.cs",
+    "src/Sessions.App/MainWindow.xaml.cs",
+    "src/Sessions.BrowserHost/Program.cs",
+    "src/Sessions.BrowserHost/Sessions.BrowserHost.csproj",
+    "src/Sessions.Core/BrowserAdapter.cs",
+    "src/Sessions.Core/BrowserPipe.cs",
+    "src/Sessions.Core/BrowserTabsClient.cs",
+    "src/Sessions.Core/Entry.cs",
+    "src/Sessions.Core/NativeMessaging.cs",
+    "tests/Sessions.Tests/BrowserAdapterTests.cs",
+    "tests/Sessions.Tests/EntryTests.cs",
+    "tests/Sessions.Tests/NativeMessagingTests.cs",
+    "tools/browser-host/install.ps1",
+    "tools/browser-host/uninstall.ps1"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8",
+  "turn_id": "0403ed8aec83",
+  "checkpoint_transcript_start": 4534,
+  "transcript_lines_at_start": 4534,
+  "compact_transcript_start": 496,
+  "token_usage": {
+    "input_tokens": 100,
+    "cache_creation_tokens": 64528,
+    "cache_read_tokens": 14750813,
+    "output_tokens": 57144,
+    "api_call_count": 50
+  },
+  "redaction": {
+    "replacements": 11,
+    "layers": {
+      "betterleaks": 5,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 31,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01Tw9kKbqqSddMPt5e2S3ciZ",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "apple-design"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "4011413ebf25",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 1141,
+        "end": 1142,
+        "entry_ids": [
+          "a4361144-0f48-4a35-bb99-fbd8df799d73"
+        ],
+        "tool_use_id": "toolu_01Tw9kKbqqSddMPt5e2S3ciZ"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01Tw9kKbqqSddMPt5e2S3ciZ"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: apple-design",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 29
+  }
+}
