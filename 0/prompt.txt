@@ -1,0 +1,50 @@
+F. Terminal and Claude Code
+
+**35. `docs: record terminal and Claude Code spike findings`** (SPIKE)
+- Write to `docs/spikes/terminal.md`: process tree under `WindowsTerminal.exe`; the `claude` process name; Claude session file path and cwd encoding; whether `claude --resume <id>` resumes it; how `wt` treats an unescaped `;` from `Process.Start` and what `-w new` does.
+
+**36. `feat(tools): PowerShell terminal hook`**
+- Add `tools/terminal-hook/sessions-hook.ps1` (writes `{pid, cwd, shellPath, wtSession, updated}` to `%APPDATA%\Sessions\terminals\<pid>.json`; removes it on exit).
+- Done when (manual): record file appears and updates after `cd` inside Windows Terminal.
+
+**37. `feat(core): read terminal records for a Windows Terminal process`**
+- Read records, drop dead PIDs, keep shells that are descendants of the given `WindowsTerminal.exe` PID (walk `ParentProcessId`).
+- Tests: descendant filter and dead-PID filter on sample data.
+
+**38. `feat(core): add TerminalEntry model`**
+- Add `TerminalTab(Cwd, ShellPath, Command, ClaudeSessionId)` and `TerminalEntry(Tabs)` registered as `"terminal"`. Round-trip test.
+
+**39. `feat(core): detect SSH and Claude Code in a shell`**
+- From shell descendants: `ssh.exe` sets `Command` to its command line; the `claude` process (name from spike) marks the tab as Claude Code.
+- Tests: detection on sample process trees.
+
+**40. `feat(core): look up Claude Code session id`**
+- Newest `.jsonl` in the project folder for the tab's cwd (path and encoding from spike). Claude running but no session file found throws `CaptureException`; no `--continue` fallback.
+- Tests: encoding function, newest-file selection.
+
+**41. `feat(core): wt command line builder`**
+- Pure function `WtCommandBuilder.Build(TerminalEntry)` producing `wt -w new -d "<cwd>" "<shell>" [-NoExit -Command "<cmd>"] ; new-tab ...` (details from spike). Claude tabs use `claude --resume <id>`.
+- Tests: single tab, multiple tabs, Claude tab, SSH tab, quoting of paths with spaces.
+
+**42. `feat(core): TerminalAdapter capture`**
+- `CanHandle` for `WindowsTerminal.exe`; builds one `TerminalEntry` from steps 37-40 plus placement. Register before Generic.
+
+**43. `feat(core): TerminalAdapter restore`**
+- Launch via `Process.Start` with the built command line, wait for the new window, apply placement.
+- Done when (manual): a terminal with a running Claude Code session reopens in the same folder with that session resumed; an SSH tab re-runs its command\
+
+---
+
+did you install the hook in my profile?
+
+---
+
+how to check windows terminal shell? but basically only powershell is possible? not command prompt as well?
+
+---
+
+install the hook into my windows powershell profile
+
+---
+
+[Image #25] i tried saving a claude code session in another project (not sessions)
