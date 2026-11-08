@@ -1,0 +1,8 @@
+<pasted_content id="00aa">
+**14. `feat(core): read window placement`**
+- Add `GetWindowPlacement`; map to `Placement` (`rcNormalPosition`, `showCmd`).
+
+**15. `feat(core): classify unsupported windows`**
+- Mark `explorer.exe`, `ApplicationFrameHost.exe` windows, and elevated processes as unsupported with a specific reason.
+- Test: classifier function on sample `WindowInfo` values.
+</pasted_content id="00aa">
