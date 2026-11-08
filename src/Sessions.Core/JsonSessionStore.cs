@@ -1,7 +1,17 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace Sessions.Core;
+
+// One session file that failed to load, with the reason.
+public sealed record SessionLoadError(string Path, string Message);
+
+// Everything that loaded, plus the files that didn't.
+public sealed record SessionListResult(
+    IReadOnlyList<Session> Sessions,
+    IReadOnlyList<SessionLoadError> Errors);
 
 // Persists sessions as one JSON file per id under a directory.
 // Writes are atomic: a temp file is written, then moved over the target.
@@ -67,6 +77,50 @@ public sealed class JsonSessionStore
         }
 
         return session;
+    }
+
+    // Loads every *.json in the directory, collecting per-file failures
+    // instead of letting one bad file sink the whole listing.
+    public SessionListResult List()
+    {
+        if (!Directory.Exists(_directory))
+        {
+            return new SessionListResult(Array.Empty<Session>(), Array.Empty<SessionLoadError>());
+        }
+
+        List<Session> sessions = new();
+        List<SessionLoadError> errors = new();
+
+        foreach (string path in Directory.EnumerateFiles(_directory, "*.json").OrderBy(p => p))
+        {
+            if (!Guid.TryParse(Path.GetFileNameWithoutExtension(path), out Guid id))
+            {
+                errors.Add(new SessionLoadError(path, "File name is not a session id."));
+                continue;
+            }
+
+            try
+            {
+                sessions.Add(Load(id));
+            }
+            catch (Exception ex) when (ex is InvalidDataException or IOException)
+            {
+                errors.Add(new SessionLoadError(path, ex.Message));
+            }
+        }
+
+        return new SessionListResult(sessions, errors);
+    }
+
+    public void Delete(Guid id)
+    {
+        string path = PathFor(id);
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException($"No session file to delete at '{path}'.", path);
+        }
+
+        File.Delete(path);
     }
 
     private string PathFor(Guid id) => Path.Combine(_directory, id.ToString("D") + ".json");

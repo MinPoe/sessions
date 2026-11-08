@@ -74,4 +74,54 @@ public class JsonSessionStoreTests : IDisposable
         Assert.Contains(path, ex.Message);
         Assert.Contains("999", ex.Message);
     }
+
+    [Fact]
+    public void List_ReturnsSavedSessions_WithNoErrors()
+    {
+        Guid a = Guid.NewGuid();
+        Guid b = Guid.NewGuid();
+        _store.Save(NewSession(a));
+        _store.Save(NewSession(b));
+
+        SessionListResult result = _store.List();
+
+        Assert.Empty(result.Errors);
+        Assert.Equal(2, result.Sessions.Count);
+        Assert.Contains(result.Sessions, s => s.Id == a);
+        Assert.Contains(result.Sessions, s => s.Id == b);
+    }
+
+    [Fact]
+    public void List_WithOneCorruptFile_ReturnsGoodSessionsAndReportsError()
+    {
+        Guid good = Guid.NewGuid();
+        Guid bad = Guid.NewGuid();
+        _store.Save(NewSession(good));
+        string badPath = Path.Combine(_dir, bad.ToString("D") + ".json");
+        File.WriteAllText(badPath, "{ not valid ");
+
+        SessionListResult result = _store.List();
+
+        Assert.Single(result.Sessions);
+        Assert.Equal(good, result.Sessions[0].Id);
+        SessionLoadError error = Assert.Single(result.Errors);
+        Assert.Equal(badPath, error.Path);
+    }
+
+    [Fact]
+    public void Delete_RemovesTheFile()
+    {
+        Guid id = Guid.NewGuid();
+        _store.Save(NewSession(id));
+
+        _store.Delete(id);
+
+        Assert.Throws<FileNotFoundException>(() => _store.Load(id));
+    }
+
+    [Fact]
+    public void Delete_Missing_Throws()
+    {
+        Assert.Throws<FileNotFoundException>(() => _store.Delete(Guid.NewGuid()));
+    }
 }
