@@ -1,0 +1,19 @@
+<pasted_content id="00aa">
+`feat(core): add Placement and Entry model`**
+- Add `Placement(X, Y, Width, Height, ShowCmd)`.
+- Add abstract `Entry(DisplayName, Placement?)` with `[JsonPolymorphic(TypeDiscriminatorPropertyName = "adapter")]` and `GenericEntry(ExePath, Arguments)` registered as `"generic"`.
+- Test: `GenericEntry` JSON round-trip through the base type
+</pasted_content id="00aa">
+
+---
+
+<pasted_content id="00aa">
+**5. `feat(core): add Session record`**
+- `Session(SchemaVersion, Id, Name, CreatedAt, Entries)`; `SchemaVersion = 1` as a named constant.
+- Test: Session with entries round-trips.
+
+**6. `feat(core): add JsonSessionStore save and load`**
+- `JsonSessionStore(string directory)`; `Save` writes `<id>.json.tmp` then `File.Move(overwrite: true)`; `Load(Guid)` throws naming the file on malformed JSON or unknown `SchemaVersion`.
+- Default directory `%APPDATA%\Sessions\sessions`.
+- Tests: save/load, malformed file, unknown version, no `.tmp` left behind
+</pasted_content id="00aa">
