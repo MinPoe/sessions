@@ -56,6 +56,37 @@ public class BrowserAdapterTests
     }
 
     [Fact]
+    public void Capture_MatchesThroughNotificationCountDrift()
+    {
+        // The tab title carries a "(2) " unread count the OS window title lacks, the
+        // two still name the same window
+        BrowserWindow[] windows =
+        {
+            new(Id: 1, Focused: true, Title: "(2) NeetCode - YouTube", Urls: new[] { "https://youtube.com/neetcode" }),
+            new(Id: 2, Focused: false, Title: "Hacker News", Urls: new[] { "https://news.ycombinator.com" }),
+        };
+
+        Entry entry = Adapter(() => windows).Capture(ChromeWindow("NeetCode - YouTube - Google Chrome"));
+
+        Assert.Equal(new[] { "https://youtube.com/neetcode" }, Assert.IsType<BrowserEntry>(entry).Urls);
+    }
+
+    [Fact]
+    public void Capture_CountOnlyOnWindowTitle_StillMatches()
+    {
+        // Drift the other way: the OS window title carries the count, the tab does not
+        BrowserWindow[] windows =
+        {
+            new(Id: 1, Focused: true, Title: "NeetCode - YouTube", Urls: new[] { "https://youtube.com/neetcode" }),
+            new(Id: 2, Focused: false, Title: "Hacker News", Urls: new[] { "https://news.ycombinator.com" }),
+        };
+
+        Entry entry = Adapter(() => windows).Capture(ChromeWindow("(5) NeetCode - YouTube - Google Chrome"));
+
+        Assert.Equal(new[] { "https://youtube.com/neetcode" }, Assert.IsType<BrowserEntry>(entry).Urls);
+    }
+
+    [Fact]
     public void Capture_AmbiguousNoMatch_Throws()
     {
         Assert.Throws<CaptureException>(() =>

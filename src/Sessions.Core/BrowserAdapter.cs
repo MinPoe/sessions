@@ -110,9 +110,9 @@ public sealed class BrowserAdapter : IAdapter
             return null;
         }
 
-        string active = StripSuffix(windowTitle);
+        string active = NormalizeTitle(StripSuffix(windowTitle));
         List<BrowserWindow> matches = windows
-            .Where(w => string.Equals(w.Title, active, StringComparison.Ordinal))
+            .Where(w => string.Equals(NormalizeTitle(w.Title), active, StringComparison.Ordinal))
             .ToList();
 
         if (matches.Count == 1)
@@ -164,6 +164,38 @@ public sealed class BrowserAdapter : IAdapter
         title.EndsWith(TitleSuffix, StringComparison.Ordinal)
             ? title[..^TitleSuffix.Length]
             : title;
+
+    // The OS window title and the extension's tab title are sampled a moment apart
+    // and a browser prepends an unread/notification count like "(3) " to the tab
+    // title (YouTube does this), so drop a leading "(n) " count and trim before
+    // comparing, otherwise the same window fails to match itself and, with a second
+    // Chrome window open, the capture is reported as ambiguous
+    private static string NormalizeTitle(string title)
+    {
+        string t = title.Trim();
+
+        if (t.Length > 2 && t[0] == '(')
+        {
+            int j = 1;
+            while (j < t.Length && char.IsDigit(t[j]))
+            {
+                j++;
+            }
+
+            if (j > 1 && j < t.Length && t[j] == ')')
+            {
+                j++;
+                while (j < t.Length && t[j] == ' ')
+                {
+                    j++;
+                }
+
+                t = t[j..];
+            }
+        }
+
+        return t;
+    }
 
     private static bool IsChrome(string? exePath) =>
         exePath is not null &&
