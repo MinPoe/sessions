@@ -17,4 +17,10 @@ public sealed record WindowInfo(nint Handle, string Title, uint ProcessId)
 
     // The parent process id, or null if it couldn't be read.
     public uint? ParentProcessId { get; init; }
+
+    // The window's normal (restored) placement and show state, or null if unreadable.
+    public Placement? Placement { get; init; }
+
+    // True when the owning process appears to run elevated (we were denied access).
+    public bool IsElevated { get; init; }
 }

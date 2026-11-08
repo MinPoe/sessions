@@ -1,4 +1,5 @@
 using System.Management;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
@@ -10,9 +11,12 @@ namespace Sessions.Core;
 // rather than throwing, so one unreadable process never sinks enumeration.
 internal static class ProcessDetails
 {
-    // Full image path via the Win32 API. On failure, exePath is null and
-    // reason explains why (no guessing a path).
-    public static (string? ExePath, string? Reason) ReadExePath(uint processId)
+    private const int ERROR_ACCESS_DENIED = 5;
+
+    // Full image path via the Win32 API. On failure, exePath is null and reason
+    // explains why (no guessing a path). AccessDenied is true when the open was
+    // refused — a strong hint the target runs elevated or is protected.
+    public static (string? ExePath, string? Reason, bool AccessDenied) ReadExePath(uint processId)
     {
         using var handle = PInvoke.OpenProcess_SafeHandle(
             PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION,
@@ -21,17 +25,18 @@ internal static class ProcessDetails
 
         if (handle.IsInvalid)
         {
-            return (null, $"OpenProcess failed for pid {processId} (likely elevated or protected).");
+            bool denied = Marshal.GetLastWin32Error() == ERROR_ACCESS_DENIED;
+            return (null, $"OpenProcess failed for pid {processId} (likely elevated or protected).", denied);
         }
 
         Span<char> buffer = new char[1024];
         uint size = (uint)buffer.Length;
         if (!PInvoke.QueryFullProcessImageName(handle, PROCESS_NAME_FORMAT.PROCESS_NAME_WIN32, buffer, ref size))
         {
-            return (null, $"QueryFullProcessImageName failed for pid {processId}.");
+            return (null, $"QueryFullProcessImageName failed for pid {processId}.", false);
         }
 
-        return (buffer[..(int)size].ToString(), null);
+        return (buffer[..(int)size].ToString(), null, false);
     }
 
     // CommandLine and ParentProcessId from Win32_Process. An empty command line

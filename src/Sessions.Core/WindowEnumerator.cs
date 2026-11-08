@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -86,7 +87,7 @@ public static class WindowEnumerator
             return false;
         }
 
-        (string? exePath, string? reason) = ProcessDetails.ReadExePath(processId);
+        (string? exePath, string? reason, bool accessDenied) = ProcessDetails.ReadExePath(processId);
         (string? commandLine, uint? parentProcessId) = ProcessDetails.ReadWmi(processId);
 
         info = new WindowInfo(hwnd, title, processId)
@@ -95,8 +96,25 @@ public static class WindowEnumerator
             UnsupportedReason = reason,
             CommandLine = commandLine,
             ParentProcessId = parentProcessId,
+            Placement = GetPlacement(hwnd),
+            IsElevated = accessDenied,
         };
+
+        // Let the classifier have the final say on why (if at all) it's unsupported.
+        info = info with { UnsupportedReason = WindowClassifier.GetUnsupportedReason(info) };
         return true;
+    }
+
+    private static Placement? GetPlacement(HWND hwnd)
+    {
+        WINDOWPLACEMENT placement = new() { length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>() };
+        if (!PInvoke.GetWindowPlacement(hwnd, ref placement))
+        {
+            return null;
+        }
+
+        RECT r = placement.rcNormalPosition;
+        return new Placement(r.left, r.top, r.right - r.left, r.bottom - r.top, (int)placement.showCmd);
     }
 
     private static bool IsAppCloaked(HWND hwnd)
