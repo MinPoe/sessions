@@ -1,0 +1,21 @@
+the app hangs ever since i added the chrome feature, it hangs when i try to save. also update readme.md
+
+---
+
+continue fixing
+
+---
+
+[Image #1]
+
+---
+
+[Image #2] this too
+
+---
+
+[Image #3]
+
+---
+
+wait so i can't save more than one chrome tab in a single window?
