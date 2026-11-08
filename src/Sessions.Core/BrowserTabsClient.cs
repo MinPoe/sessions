@@ -3,6 +3,8 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sessions.Core;
 
@@ -26,22 +28,38 @@ public static class BrowserTabsClient
 
     // Opens the pipe, waits for the host to connect (the extension's reconnect loop
     // spawns it), requests the windows, and returns the reply, throws on timeout or
-    // a closed connection so the adapter can report the browser as uncapturable
-    public static IReadOnlyList<BrowserWindow> Query(TimeSpan timeout)
-    {
-        using var server = new NamedPipeServerStream(
-            BrowserPipe.Name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+    // a closed connection so the adapter can report the browser as uncapturable.
+    // The timeout bounds the whole exchange (connect, request, reply), not just the
+    // connect: a host that connects but never answers must not freeze the caller,
+    // which runs on the UI thread during a capture
+    public static IReadOnlyList<BrowserWindow> Query(TimeSpan timeout) => Query(timeout, BrowserPipe.Name);
 
-        Task connect = server.WaitForConnectionAsync();
-        if (!connect.Wait(timeout))
+    // pipeName is a seam for tests, which must not bind the production pipe name a
+    // real browser host may be connected to, production always uses BrowserPipe.Name
+    public static IReadOnlyList<BrowserWindow> Query(TimeSpan timeout, string pipeName)
+    {
+        using var cts = new CancellationTokenSource(timeout);
+        try
+        {
+            return QueryAsync(pipeName, cts.Token).GetAwaiter().GetResult();
+        }
+        catch (OperationCanceledException)
         {
             throw new BrowserUnavailableException(
                 "No response from the Chrome extension, is it loaded and the browser host installed?");
         }
+    }
 
-        NativeMessaging.WriteFrame(server, """{"cmd":"getWindows"}""");
+    private static async Task<IReadOnlyList<BrowserWindow>> QueryAsync(string pipeName, CancellationToken cancellationToken)
+    {
+        using var server = new NamedPipeServerStream(
+            pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
 
-        string? reply = NativeMessaging.ReadFrame(server);
+        await server.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
+
+        await NativeMessaging.WriteFrameAsync(server, """{"cmd":"getWindows"}""", cancellationToken).ConfigureAwait(false);
+
+        string? reply = await NativeMessaging.ReadFrameAsync(server, cancellationToken).ConfigureAwait(false);
         if (reply is null)
         {
             throw new BrowserUnavailableException("The browser host closed before replying.");

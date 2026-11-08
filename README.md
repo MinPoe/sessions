@@ -6,6 +6,7 @@ inside it,
 
 - VS Code reopens the folder or workspace that was open, not a blank window
 - Windows Terminal reopens its tabs in their folders, resumes a Claude Code session, and re-runs an ssh command
+- Chrome reopens the tabs of a window once the browser extension and native host are set up (see below)
 - everything else is relaunched by its executable and placed at its captured position
 
 ## Requirements

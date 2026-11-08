@@ -14,10 +14,10 @@ public sealed class RestoreRow
             ? "Restored"
             : result.ErrorMessage ?? "Could not be restored.";
 
-        if (result.Entry is GenericEntry generic)
-        {
-            Icon = IconLoader.ForExecutable(generic.ExePath);
-        }
+        // The app's own icon, from the exe this entry was captured from; fall back to
+        // a generic entry's ExePath for sessions saved before IconSourcePath existed
+        Icon = IconLoader.ForExecutable(
+            result.Entry.IconSourcePath ?? (result.Entry as GenericEntry)?.ExePath);
     }
 
     public string DisplayName { get; }

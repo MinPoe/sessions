@@ -71,11 +71,17 @@ Hard rules for the host:
 
 ## Capture flow
 
-- the Sessions app is the named-pipe server (e.g. `\\.\pipe\sessions.browser`), listening while it runs
+- the Sessions app is the named-pipe server (e.g. `\\.\pipe\sessions.browser`), it opens the server
+  only while a capture is in flight, not for the app's whole lifetime
 - the extension service worker opens a long-lived port with `chrome.runtime.connectNative("com.sessions.browser")`, Chrome spawns the host, the host connects to the app's pipe as a client
+- the host waits for that server rather than exiting when it is absent, `pipe.Connect()` blocks until
+  the app opens its pipe for the next capture, so the host process (and the native port that keeps the
+  service worker alive) stays up across captures instead of flapping, exit only when Chrome closes the
+  port, seen as end-of-stream on stdin while awaiting a reply
 - to capture, the app writes `{"cmd":"getWindows"}` down the pipe, the host frames it to Chrome, the
   service worker answers with `chrome.windows.getAll({populate:true})` mapped to `[{ id, urls:[...] }]`,
-  the host relays the reply back down the pipe
+  the host relays the reply back down the pipe, one request and one reply per connection, the app then
+  disposes its server and the host loops back to wait for the next capture
 - windows are keyed by Chrome's window id so each Chrome window becomes one BrowserEntry
 
 MV3 caveat, a service worker is not persistent, but an open native messaging port keeps it alive while
