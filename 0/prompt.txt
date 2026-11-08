@@ -1,0 +1,9 @@
+allow editing a session (e.g. adding or deleting a saved process, for example if someone doesnt want powershell anymore or google chroem anymore or they want to add a current powershell session to a preexisting session)
+
+---
+
+[Image #26]
+
+---
+
+[Image #26], also continue with the hook's dead-record sweep
