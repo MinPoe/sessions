@@ -1,0 +1,16 @@
+<pasted_content id="00aa">
+**11. `feat(core): exclude cloaked and own-process windows`**
+- Add `DwmGetWindowAttribute(DWMWA_CLOAKED)`; skip cloaked windows, windows of this process, and `Program Manager`.
+
+**12. `feat(core): read process executable path`**
+- Add `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)`, `QueryFullProcessImageName`, `CloseHandle`.
+- `WindowInfo` gets `ExePath`; on failure set `UnsupportedReason` (no guessing).
+
+**13. `feat(core): read command line and parent PID via WMI`**
+- Add `System.Management`; query `CommandLine, ParentProcessId` from `Win32_Process`.
+- Null or empty command line sets `CommandLine = null` (adapters decide if that is an error).
+</pasted_content id="00aa">
+
+---
+
+don't hide windows on other virtual desktops
