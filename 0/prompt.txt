@@ -1,0 +1,34 @@
+<pasted_content id="00aa">
+C. Adapters and restore
+
+**16. `feat(core): add IAdapter, exceptions and ordered registry`**
+- `IAdapter { CanHandle; Capture; Restore }`, `CaptureException`, `RestoreException`.
+- `AdapterRegistry` with fixed order: specific adapters first, Generic last.
+- Test: ordering and selection.
+
+**17. `feat(core): GenericAdapter capture`**
+- `CanHandle` true for any supported window; `Capture` returns `GenericEntry` (exe, arguments from command line, placement). Throw `CaptureException` when the exe path is missing.
+- Test: capture from a sample `WindowInfo`.
+
+**18. `feat(core): detect newly opened windows`**
+- `WindowWaiter`: snapshot existing HWNDs for an exe path, poll every 200 ms for a new HWND of that exe, timeout 15 s (named constant).
+- Throws `RestoreException("<name>: window did not appear within 15 s")`.
+
+**19. `feat(core): apply window placement`**
+- Add `SetWindowPlacement` (set `length`); clamp off-screen rectangles to the primary monitor work area.
+- Elevated target throws `RestoreException("cannot position elevated window; run sessions as administrator")`.
+- Test: the clamp function.
+
+**20. `feat(core): GenericAdapter restore`**
+- Launch with `ProcessStartInfo(exePath, arguments) { UseShellExecute = false }`; wait via `WindowWaiter`; apply placement. Missing exe throws.
+- Done when (manual): Notepad with a file reopens at the saved position and size.
+
+**21. `feat(core): add RestoreRunner`**
+- Runs entries sequentially; returns `RestoreResult(Entry, Success, ErrorMessage)` for each; continues after a failure.
+- Test: runner with fake adapters, including a failing one.
+
+**22. `feat(core): add session capture service`**
+- Given selected `WindowInfo`s and a name, picks the first matching adapter per window, collects per-entry failures, returns the `Session` and the failures.
+- Validates the name: non-empty, unique among saved sessions.
+- Tests: name validation, one failing capture does not drop the others.
+</pasted_content id="00aa">
