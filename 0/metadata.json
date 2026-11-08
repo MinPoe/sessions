@@ -1,0 +1,84 @@
+{
+  "cli_version": "0.13.1",
+  "checkpoint_id": "01M6Y56PNFE6PX9MHPK9AHFNAB",
+  "session_id": "3fdead9a-2313-4930-84dc-637d68773cbd",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-08T18:02:24.1844306Z",
+  "branch": "dev",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "README.md",
+    "src/Sessions.App/MainWindow.xaml",
+    "src/Sessions.App/MainWindow.xaml.cs",
+    "src/Sessions.App/Sessions.App.csproj",
+    "src/Sessions.App/WindowSettings.cs",
+    "src/Sessions.App/app.ico",
+    "src/Sessions.Core/TerminalAdapter.cs",
+    "tests/Sessions.Tests/EntryTests.cs"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8",
+  "turn_id": "ba4dd83cb278",
+  "checkpoint_transcript_start": 4372,
+  "transcript_lines_at_start": 4372,
+  "compact_transcript_start": 479,
+  "token_usage": {
+    "input_tokens": 32,
+    "cache_creation_tokens": 16196,
+    "cache_read_tokens": 3971091,
+    "output_tokens": 13919,
+    "api_call_count": 16
+  },
+  "redaction": {
+    "replacements": 6,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 6,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01Tw9kKbqqSddMPt5e2S3ciZ",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "apple-design"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "4011413ebf25",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 1141,
+        "end": 1142,
+        "entry_ids": [
+          "a4361144-0f48-4a35-bb99-fbd8df799d73"
+        ],
+        "tool_use_id": "toolu_01Tw9kKbqqSddMPt5e2S3ciZ"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01Tw9kKbqqSddMPt5e2S3ciZ"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: apple-design",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 26
+  }
+}

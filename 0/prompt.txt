@@ -1,0 +1,30 @@
+<pasted_content id="00aa">
+G. Finish
+
+**44. `feat(app): app icon and window defaults`**
+- Icon, default window size and title, remembered window size.
+
+**45. `docs: add README`**
+- What it does, install and run, hook install line for `$PROFILE`, known limits (TECH_STACK.md section 11).
+
+## H. Stretch: browser (only after F is done)
+
+**46. `docs: record native messaging spike findings`** (SPIKE)
+- Write to `docs/spikes/browser.md`: host registration worked with the registry key and manifest; message round-trip from the extension.
+
+**47. `feat(extension): MV3 extension returning tab URLs per window`**
+
+**48. `feat(host): BrowserHost native messaging relay`**
+- Length-prefixed JSON on stdin/stdout, nothing else on stdout; relays to a named pipe.
+- Test: framing encode/decode.
+
+**49. `feat(tools): browser host install script`**
+- Writes the manifest and `HKCU\Software\Google\Chrome\NativeMessagingHosts\<name>`; `allowed_origins` set to the exact extension ID.
+
+**50. `feat(core): BrowserEntry and BrowserAdapter`**
+- Add `BrowserEntry(Urls)` registered as `"browser"`; capture via the pipe; restore with `chrome.exe --new-window <urls>`.
+- Done when (manual): three tabs reopen in one window.
+</pasted_content id="00aa">
+
+
+start with finishing first (only use "-" for dashes)
