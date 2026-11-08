@@ -1,0 +1,51 @@
+currently im testing and there's issues with loading a lot of stuff: 
+doesnt open: spotify only
+app opens but doesnt navigate to correct saved setting: google chrome (empty tab), vscode (empty window), claude code on command prompt
+these are all i've tested so far but since we're going to be half of these just take note of it
+
+---
+
+<pasted_content id="00aa">
+VS Code adapter
+
+**31. `docs: record VS Code spike findings`** (SPIKE)
+- Write to `docs/spikes/vscode.md`: structure of `%APPDATA%\Code\User\globalStorage\storage.json` (`windowsState`), whether it is current while VS Code runs, and the title format for two open folders.
+
+**32. `feat(core): VS Code path parser`**
+- Pure function resolving a window's folder or `.code-workspace` from the storage data plus title, using the spike's findings.
+- Tests: samples taken from the spike.
+
+**33. `feat(core): VsCodeEntry and VsCodeAdapter capture`**
+- Add `VsCodeEntry(Path)` registered as `"vscode"`; `CanHandle` for `Code.exe`; unresolved path throws `CaptureException`. Register before Generic.
+
+**34. `feat(core): VsCodeAdapter restore`**
+- Run `code -n "<path>"`, wait for the new window, apply placement.
+- Done when (manual): two VS Code windows on different folders reopen correctly.
+</pasted_content id="00aa">
+
+---
+
+<pasted_content id="00aa">
+VS Code adapter
+
+**31. `docs: record VS Code spike findings`** (SPIKE)
+- Write to `docs/spikes/vscode.md`: structure of `%APPDATA%\Code\User\globalStorage\storage.json` (`windowsState`), whether it is current while VS Code runs, and the title format for two open folders.
+
+**32. `feat(core): VS Code path parser`**
+- Pure function resolving a window's folder or `.code-workspace` from the storage data plus title, using the spike's findings.
+- Tests: samples taken from the spike.
+
+**33. `feat(core): VsCodeEntry and VsCodeAdapter capture`**
+- Add `VsCodeEntry(Path)` registered as `"vscode"`; `CanHandle` for `Code.exe`; unresolved path throws `CaptureException`. Register before Generic.
+
+**34. `feat(core): VsCodeAdapter restore`**
+- Run `code -n "<path>"`, wait for the new window, apply placement.
+- Done when (manual): two VS Code windows on different folders reopen correctly.
+</pasted_content id="00aa">
+
+
+note that spotify did show with an X
+
+---
+
+[Image #23]
