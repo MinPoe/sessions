@@ -18,6 +18,10 @@ public sealed class EntryRow
                 : $"{Path.GetFileName(generic.ExePath)}  {generic.Arguments}";
             Icon = IconLoader.ForExecutable(generic.ExePath);
         }
+        else if (entry is VsCodeEntry vsCode)
+        {
+            Detail = vsCode.Path;
+        }
         else
         {
             Detail = string.Empty;

@@ -20,7 +20,7 @@ public sealed class MainViewModel : ObservableObject
     {
         _shell = shell ?? throw new ArgumentNullException(nameof(shell));
         _store = store ?? new JsonSessionStore(JsonSessionStore.DefaultDirectory);
-        _registry = new AdapterRegistry(Array.Empty<IAdapter>(), new GenericAdapter());
+        _registry = new AdapterRegistry(new IAdapter[] { new VsCodeAdapter() }, new GenericAdapter());
 
         NewCommand = new RelayCommand(NewSession);
         LoadCommand = new RelayCommand(LoadSession, () => SelectedSession is not null);

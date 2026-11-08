@@ -21,7 +21,7 @@ public partial class MainWindow : Window, IShell
     public Session? ShowNewSessionDialog()
     {
         JsonSessionStore store = new(JsonSessionStore.DefaultDirectory);
-        AdapterRegistry registry = new(Array.Empty<IAdapter>(), new GenericAdapter());
+        AdapterRegistry registry = new(new IAdapter[] { new VsCodeAdapter() }, new GenericAdapter());
 
         NewSessionDialog dialog = new(new NewSessionViewModel(store, registry)) { Owner = this };
         dialog.ShowDialog();

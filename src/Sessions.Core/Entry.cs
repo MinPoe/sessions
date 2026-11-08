@@ -6,6 +6,7 @@ namespace Sessions.Core;
 // serialized polymorphically on the "adapter" discriminator
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "adapter")]
 [JsonDerivedType(typeof(GenericEntry), "generic")]
+[JsonDerivedType(typeof(VsCodeEntry), "vscode")]
 public abstract record Entry(string DisplayName, Placement? Placement)
 {
     // The adapter that restores this entry; mirrors the JSON discriminator
@@ -19,4 +20,12 @@ public sealed record GenericEntry(string DisplayName, Placement? Placement, stri
 {
     [JsonIgnore]
     public override string AdapterId => "generic";
+}
+
+// Reopens a VS Code folder or .code-workspace, Path is the folder or workspace file
+public sealed record VsCodeEntry(string DisplayName, Placement? Placement, string Path)
+    : Entry(DisplayName, Placement)
+{
+    [JsonIgnore]
+    public override string AdapterId => "vscode";
 }

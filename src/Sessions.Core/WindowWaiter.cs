@@ -58,10 +58,19 @@ public sealed class WindowWaiter : IWindowWaiter
         return result;
     }
 
-    private static bool IsFromExe(uint pid, string exePath)
+    // Matches when target is a full path (exact match) or a bare file name like
+    // "Code.exe" (match any process with that executable name)
+    private static bool IsFromExe(uint pid, string target)
     {
         (string? candidate, _, _) = ProcessDetails.ReadExePath(pid);
-        return candidate is not null &&
-               string.Equals(candidate, exePath, StringComparison.OrdinalIgnoreCase);
+        if (candidate is null)
+        {
+            return false;
+        }
+
+        bool targetIsPath = target.Contains('\\') || target.Contains('/');
+        return targetIsPath
+            ? string.Equals(candidate, target, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(System.IO.Path.GetFileName(candidate), target, StringComparison.OrdinalIgnoreCase);
     }
 }
