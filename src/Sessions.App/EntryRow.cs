@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using Sessions.Core;
 
@@ -21,6 +22,13 @@ public sealed class EntryRow
         else if (entry is VsCodeEntry vsCode)
         {
             Detail = vsCode.Path;
+        }
+        else if (entry is TerminalEntry terminal)
+        {
+            Detail = string.Join("  ", terminal.Tabs.Select(t =>
+                t.ClaudeSessionId is not null ? $"{Path.GetFileName(t.Cwd.TrimEnd('\\', '/'))} (Claude)"
+                : t.Command is not null ? $"{Path.GetFileName(t.Cwd.TrimEnd('\\', '/'))} (ssh)"
+                : Path.GetFileName(t.Cwd.TrimEnd('\\', '/'))));
         }
         else
         {
