@@ -1,0 +1,14 @@
+EnumWindows
+IsWindowVisible
+GetWindowText
+GetWindowTextLength
+GetWindow
+GetWindowLong
+GetWindowPlacement
+SetWindowPlacement
+SystemParametersInfo
+GetWindowThreadProcessId
+DwmGetWindowAttribute
+OpenProcess
+QueryFullProcessImageName
+CloseHandle

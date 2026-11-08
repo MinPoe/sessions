@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:Sessions.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Index 0: the color appearance, swapped at runtime by ThemeManager -->
+                <ResourceDictionary Source="Themes/LightColors.xaml"/>
+                <ResourceDictionary Source="Themes/AppleTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
