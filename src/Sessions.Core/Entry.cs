@@ -6,8 +6,17 @@ namespace Sessions.Core;
 // Serialized polymorphically on the "adapter" discriminator.
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "adapter")]
 [JsonDerivedType(typeof(GenericEntry), "generic")]
-public abstract record Entry(string DisplayName, Placement? Placement);
+public abstract record Entry(string DisplayName, Placement? Placement)
+{
+    // The adapter that restores this entry; mirrors the JSON discriminator.
+    [JsonIgnore]
+    public abstract string AdapterId { get; }
+}
 
 // Launches an arbitrary executable with optional command-line arguments.
 public sealed record GenericEntry(string DisplayName, Placement? Placement, string ExePath, string Arguments)
-    : Entry(DisplayName, Placement);
+    : Entry(DisplayName, Placement)
+{
+    [JsonIgnore]
+    public override string AdapterId => "generic";
+}

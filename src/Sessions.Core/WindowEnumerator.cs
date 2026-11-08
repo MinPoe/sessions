@@ -32,6 +32,33 @@ public static class WindowEnumerator
         return windows;
     }
 
+    // Lightweight listing of visible top-level window handles with their pid,
+    // without the process/WMI enrichment Enumerate() does. Used for polling.
+    internal static List<(HWND Handle, uint ProcessId)> EnumerateVisibleHandles()
+    {
+        List<(HWND, uint)> handles = new();
+
+        PInvoke.EnumWindows(
+            (HWND hwnd, LPARAM _) =>
+            {
+                if (PInvoke.IsWindowVisible(hwnd))
+                {
+                    uint pid;
+                    unsafe
+                    {
+                        PInvoke.GetWindowThreadProcessId(hwnd, &pid);
+                    }
+
+                    handles.Add((hwnd, pid));
+                }
+
+                return true;
+            },
+            default);
+
+        return handles;
+    }
+
     private static bool TryDescribe(HWND hwnd, uint ownProcessId, out WindowInfo info)
     {
         info = default!;

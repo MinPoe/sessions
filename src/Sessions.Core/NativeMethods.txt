@@ -5,6 +5,8 @@ GetWindowTextLength
 GetWindow
 GetWindowLong
 GetWindowPlacement
+SetWindowPlacement
+SystemParametersInfo
 GetWindowThreadProcessId
 DwmGetWindowAttribute
 OpenProcess
