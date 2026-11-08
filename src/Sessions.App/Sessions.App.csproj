@@ -14,6 +14,13 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- Per-monitor DPI awareness (PerMonitorV2) declared in the manifest. -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Icon for the built exe and the taskbar -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Also embedded as a resource so the window chrome can show it -->
+    <Resource Include="app.ico" />
+  </ItemGroup>
 
 </Project>

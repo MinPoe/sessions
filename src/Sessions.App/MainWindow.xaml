@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Sessions.App"
         mc:Ignorable="d"
         Title="Sessions" Height="560" Width="880" MinWidth="680" MinHeight="420"
+        Icon="app.ico" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBrush}"
         FontFamily="{StaticResource UIFont}"
         FontSize="{StaticResource FontSizeBody}"

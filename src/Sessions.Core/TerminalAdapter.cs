@@ -123,7 +123,7 @@ public sealed class TerminalAdapter : IAdapter
             first = tabs[0].Cwd;
         }
 
-        return tabs.Count == 1 ? $"Terminal — {first}" : $"Terminal — {first} +{tabs.Count - 1}";
+        return tabs.Count == 1 ? $"Terminal - {first}" : $"Terminal - {first} +{tabs.Count - 1}";
     }
 
     // Start wt.exe through the shell so the Store execution alias resolves, the

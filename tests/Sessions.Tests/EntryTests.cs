@@ -40,7 +40,7 @@ public class EntryTests
     public void TerminalEntry_RoundTrips_ThroughBaseType()
     {
         Entry original = new TerminalEntry(
-            DisplayName: "Terminal \u2014 sessions +1",
+            DisplayName: "Terminal - sessions +1",
             Placement: new Placement(0, 0, 1000, 700, 1),
             Tabs: new[]
             {
