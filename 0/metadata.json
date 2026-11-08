@@ -43,5 +43,43 @@
   },
   "session_metrics": {
     "turn_count": 9
+  },
+  "summary": {
+    "intent": "Implement steps 11-13 of a Windows session-restore tool's core library: filter cloaked/own-process/Program Manager windows, read process exe path, and read command line plus parent PID via WMI. The user then asked that windows on other virtual desktops not be hidden.",
+    "outcome": "All three steps were implemented in Sessions.Core and verified against real windows; the cloak filter was then changed to keep windows on other virtual desktops (DWM_CLOAKED_SHELL) and drop only app-cloaked ones. Core builds clean (0 warnings/0 errors).",
+    "learnings": {
+      "repo": [
+        "Sessions.Core uses CsWin32, with APIs listed in src/Sessions.Core/NativeMethods.txt; generated bindings differ from raw Win32 names, e.g. OpenProcess_SafeHandle instead of OpenProcess, and GetWindowLong because the metadata has no GetWindowLongPtr.",
+        "Process lookups (exe path, WMI command line/parent PID) live in ProcessDetails.cs, separate from WindowEnumerator.cs.",
+        "WindowInfo carries ExePath, CommandLine, ParentProcessId and UnsupportedReason; on failure ExePath stays null and UnsupportedReason is set rather than guessing. Empty or missing command line becomes null.",
+        "System.Management 9.0.0 is used for WMI Win32_Process queries; WMI failures are caught and non-fatal, leaving CommandLine and ParentProcessId null.",
+        "Using the SafeHandle variant makes an explicit CloseHandle unnecessary, though CloseHandle remains in NativeMethods.txt per the spec."
+      ],
+      "code": [
+        {
+          "path": "src/Sessions.Core/WindowEnumerator.cs",
+          "finding": "IsCloaked was renamed to IsAppCloaked. It reads DWMWA_CLOAKED but treats DWM_CLOAKED_SHELL (2, window on another virtual desktop) as not hidden; only app or inherited cloaking excludes a window. Exact line numbers were not given in the transcript."
+        },
+        {
+          "path": "src/Sessions.Core/ProcessDetails.cs",
+          "finding": "ReadExePath uses OpenProcess_SafeHandle(PROCESS_QUERY_LIMITED_INFORMATION) with QueryFullProcessImageName and a Span<char> overload; ReadWmi queries CommandLine and ParentProcessId from Win32_Process."
+        }
+      ],
+      "workflow": [
+        "Verified behaviour with temporary scratchpad console projects against live windows and deleted them afterwards.",
+        "When the window count dropped unexpectedly from 7 to 2, the cause was found by confirming the processes were still running and then dumping raw DwmGetWindowAttribute values with a P/Invoke diagnostic, rather than assuming over-exclusion.",
+        "The assistant flagged the design consequence (cloaked filter hides other virtual desktops) up front, which led to the user's follow-up correction."
+      ]
+    },
+    "friction": [
+      "The cloak filter as specified initially hid windows on other virtual desktops, which is wrong for a session-restore tool, and it took a diagnostic to find this.",
+      "CsWin32 API naming deviations (SafeHandle variants, GetWindowLong vs GetWindowLongPtr) forced departures from the spec's literal API names.",
+      "First build after the initial write needed a rewrite of ProcessDetails.cs to use the SafeHandle and Span overloads."
+    ],
+    "open_items": [
+      "Decide whether 'Windows Input Experience', an always-present system window, should be filtered by name like Program Manager.",
+      "Decide whether to drop CloseHandle from NativeMethods.txt since the SafeHandle makes it unnecessary.",
+      "Commits are not yet made; suggested messages: feat(core): exclude cloaked and own-process windows; feat(core): read process executable path; feat(core): read command line and parent PID via WMI; fix(core): keep windows on other virtual desktops."
+    ]
   }
 }
