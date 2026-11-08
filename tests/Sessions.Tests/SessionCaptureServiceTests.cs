@@ -30,6 +30,20 @@ public class SessionCaptureServiceTests
     }
 
     [Fact]
+    public void CaptureEntries_ReturnsEntriesAndFailures_WithoutNameCheck()
+    {
+        WindowInfo good = Window("Good", @"C:\a.exe");
+        WindowInfo bad = Window("NoExe", exePath: null); // supported but no exe -> CaptureException
+
+        var (entries, failures) = Service().CaptureEntries(new[] { good, bad });
+
+        Entry entry = Assert.Single(entries);
+        Assert.Equal("Good", entry.DisplayName);
+        CaptureFailure failure = Assert.Single(failures);
+        Assert.Equal("NoExe", failure.Window.Title);
+    }
+
+    [Fact]
     public void Capture_OneFailure_DoesNotDropTheOthers()
     {
         WindowInfo good1 = Window("Good1", @"C:\a.exe");

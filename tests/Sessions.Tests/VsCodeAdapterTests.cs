@@ -14,8 +14,8 @@ public class VsCodeAdapterTests
         }
         """;
 
-    private static VsCodeAdapter Adapter(string? storageJson) =>
-        new(() => storageJson, new NoWaiter(), new NoPlacer(), _ => { });
+    private static VsCodeAdapter Adapter(string? storageJson, string? recentJson = null) =>
+        new(() => storageJson, () => recentJson, new NoWaiter(), new NoPlacer(), _ => { });
 
     private static WindowInfo CodeWindow(string title) =>
         new(Handle: 1, Title: title, ProcessId: 10)
@@ -68,6 +68,33 @@ public class VsCodeAdapterTests
     {
         Assert.Throws<CaptureException>(() =>
             Adapter(storageJson: null).Capture(CodeWindow("x - sessions - Visual Studio Code")));
+    }
+
+    [Fact]
+    public void Capture_StorageStale_FallsBackToRecentList()
+    {
+        // windowsState only knows eth-uvm-tb, but the recent list has sessions, so a
+        // sessions window still resolves
+        const string recent =
+            """
+            {
+              "entries": [
+                { "folderUri": "file:///c%3A/Users/ZEPHYRUS%20G14/Desktop/eth-uvm-tb" },
+                { "folderUri": "file:///c%3A/Users/ZEPHYRUS%20G14/Desktop/sessions" },
+                { "fileUri": "file:///c%3A/Users/ZEPHYRUS%20G14/Desktop/sessions/README.md" }
+              ]
+            }
+            """;
+        const string staleStorage =
+            """
+            { "windowsState": { "lastActiveWindow": { "folder": "file:///c%3A/Users/ZEPHYRUS%20G14/Desktop/eth-uvm-tb" }, "openedWindows": [] } }
+            """;
+
+        Entry entry = Adapter(staleStorage, recent)
+            .Capture(CodeWindow("vscode.md - sessions - Visual Studio Code"));
+
+        VsCodeEntry vs = Assert.IsType<VsCodeEntry>(entry);
+        Assert.Equal(@"c:\Users\ZEPHYRUS G14\Desktop\sessions", vs.Path);
     }
 
     [Fact]

@@ -9,6 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="System.Management" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <!-- Pin the native SQLite bundle past the advisory on 2.1.10/2.1.11 (GHSA-2m69-gcr7-jv3q) -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.14" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.369">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

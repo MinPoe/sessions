@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>BrowserHost</AssemblyName>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- A console subsystem exe, but Chrome launches it with no visible window -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sessions.Core\Sessions.Core.csproj" />
+  </ItemGroup>
+
+</Project>
