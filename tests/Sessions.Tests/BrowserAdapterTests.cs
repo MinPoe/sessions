@@ -47,6 +47,14 @@ public class BrowserAdapterTests
     }
 
     [Fact]
+    public void Capture_RecordsExePath_AsIconSource()
+    {
+        Entry entry = Adapter(() => TwoWindows).Capture(ChromeWindow("Hacker News - Google Chrome"));
+
+        Assert.Equal(@"C:\Program Files\Google\Chrome\Application\chrome.exe", entry.IconSourcePath);
+    }
+
+    [Fact]
     public void Capture_SingleWindow_FallsBackWithoutTitleMatch()
     {
         BrowserWindow[] one = { new(Id: 9, Focused: true, Title: "whatever", Urls: new[] { "https://only.example" }) };

@@ -80,7 +80,10 @@ public sealed class TerminalAdapter : IAdapter
             tabs.Add(new TerminalTab(shell.Cwd, shell.ShellPath, sshCommand, claudeSessionId));
         }
 
-        return new TerminalEntry(DisplayNameFor(tabs), window.Placement, tabs);
+        return new TerminalEntry(DisplayNameFor(tabs), window.Placement, tabs)
+        {
+            IconSourcePath = window.ExePath,
+        };
     }
 
     public void Restore(Entry entry)

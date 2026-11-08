@@ -42,12 +42,16 @@ public class EntryTests
         Entry original = new BrowserEntry(
             DisplayName: "Chrome - Example +2",
             Placement: new Placement(5, 5, 1400, 900, 1),
-            Urls: new[] { "https://a.example", "https://b.example", "https://c.example" });
+            Urls: new[] { "https://a.example", "https://b.example", "https://c.example" })
+        {
+            IconSourcePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        };
 
         string json = JsonSerializer.Serialize(original);
         Entry? restored = JsonSerializer.Deserialize<Entry>(json);
 
         Assert.Equal(original, restored);
+        Assert.Equal(original.IconSourcePath, restored!.IconSourcePath);
         Assert.IsType<BrowserEntry>(restored);
     }
 

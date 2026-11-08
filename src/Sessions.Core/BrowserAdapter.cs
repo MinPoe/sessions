@@ -66,7 +66,10 @@ public sealed class BrowserAdapter : IAdapter
                 $"{window.Title}: couldn't match this Chrome window to its tabs (is more than one Chrome window on the same page?).");
         }
 
-        return new BrowserEntry(DisplayNameFor(window.Title, urls), window.Placement, urls);
+        return new BrowserEntry(DisplayNameFor(window.Title, urls), window.Placement, urls)
+        {
+            IconSourcePath = window.ExePath,
+        };
     }
 
     public void Restore(Entry entry)

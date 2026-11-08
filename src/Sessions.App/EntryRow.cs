@@ -17,7 +17,6 @@ public sealed class EntryRow
             Detail = string.IsNullOrWhiteSpace(generic.Arguments)
                 ? Path.GetFileName(generic.ExePath)
                 : $"{Path.GetFileName(generic.ExePath)}  {generic.Arguments}";
-            Icon = IconLoader.ForExecutable(generic.ExePath);
         }
         else if (entry is VsCodeEntry vsCode)
         {
@@ -43,6 +42,11 @@ public sealed class EntryRow
         Placement = entry.Placement is { } p
             ? $"{p.Width}×{p.Height} at {p.X}, {p.Y}"
             : "Default position";
+
+        // The app's own icon, from the exe this entry was captured from; fall back to
+        // a generic entry's ExePath for sessions saved before IconSourcePath existed
+        Icon = IconLoader.ForExecutable(
+            entry.IconSourcePath ?? (entry as GenericEntry)?.ExePath);
     }
 
     public Entry Entry { get; }

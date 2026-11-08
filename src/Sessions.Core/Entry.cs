@@ -16,6 +16,11 @@ public abstract record Entry(string DisplayName, Placement? Placement)
     // The adapter that restores this entry; mirrors the JSON discriminator
     [JsonIgnore]
     public abstract string AdapterId { get; }
+
+    // Full path to the executable this entry was captured from, so the UI can show
+    // the app's own icon beside it, null on entries saved before this existed or
+    // when the path was unreadable (the UI then shows a placeholder)
+    public string? IconSourcePath { get; init; }
 }
 
 // Launches an arbitrary executable with optional command-line arguments
@@ -51,6 +56,7 @@ public sealed record BrowserEntry(string DisplayName, Placement? Placement, IRea
         other is not null &&
         DisplayName == other.DisplayName &&
         Placement == other.Placement &&
+        IconSourcePath == other.IconSourcePath &&
         Urls.SequenceEqual(other.Urls);
 
     public override int GetHashCode()
@@ -58,6 +64,7 @@ public sealed record BrowserEntry(string DisplayName, Placement? Placement, IRea
         HashCode hash = new();
         hash.Add(DisplayName);
         hash.Add(Placement);
+        hash.Add(IconSourcePath);
         foreach (string url in Urls)
         {
             hash.Add(url);
@@ -80,6 +87,7 @@ public sealed record TerminalEntry(string DisplayName, Placement? Placement, IRe
         other is not null &&
         DisplayName == other.DisplayName &&
         Placement == other.Placement &&
+        IconSourcePath == other.IconSourcePath &&
         Tabs.SequenceEqual(other.Tabs);
 
     public override int GetHashCode()
@@ -87,6 +95,7 @@ public sealed record TerminalEntry(string DisplayName, Placement? Placement, IRe
         HashCode hash = new();
         hash.Add(DisplayName);
         hash.Add(Placement);
+        hash.Add(IconSourcePath);
         foreach (TerminalTab tab in Tabs)
         {
             hash.Add(tab);

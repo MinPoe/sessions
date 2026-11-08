@@ -80,7 +80,10 @@ public sealed class VsCodeAdapter : IAdapter
                 $"{window.Title}: couldn't resolve the VS Code folder from windowsState or the recent list.");
         }
 
-        return new VsCodeEntry(DisplayNameFor(path), window.Placement, path);
+        return new VsCodeEntry(DisplayNameFor(path), window.Placement, path)
+        {
+            IconSourcePath = window.ExePath,
+        };
     }
 
     public void Restore(Entry entry)
