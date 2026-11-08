@@ -54,5 +54,46 @@
   },
   "session_metrics": {
     "turn_count": 11
+  },
+  "summary": {
+    "intent": "Implement steps 16-22 of a plan for the Sessions app's Core library: adapter interface and registry, generic adapter capture/restore, window waiter, window placement, restore runner, and session capture service, with tests.",
+    "outcome": "All seven steps were implemented in Sessions.Core with unit tests; Release build is clean and 35/35 tests pass. The manual Notepad end-to-end restore check (step 20) was blocked by the sandbox and left for the user to run.",
+    "learnings": {
+      "repo": [
+        "Core uses CsWin32 (NativeMethods.txt) for Win32 APIs; new natives such as SetWindowPlacement are added there.",
+        "The spec's IAdapter { CanHandle; Capture; Restore } had no link from entry to adapter, so IAdapter.Id and Entry.AdapterId were added, mirroring the JSON 'adapter' discriminator.",
+        "AdapterRegistry forces GenericAdapter last; SelectForCapture takes the first CanHandle match and SelectForRestore resolves by id.",
+        "WindowWaiter and WindowPlacer sit behind IWindowWaiter/IWindowPlacer so GenericAdapter can be unit-tested without real windows.",
+        "Window-placement clamping (ClampToWorkArea) is a pure function, so it is unit-testable without a display.",
+        "Session name validation is case-insensitive for uniqueness among saved sessions.",
+        "Shared test fakes live in tests/Sessions.Tests/Fakes.cs."
+      ],
+      "code": [
+        {
+          "path": "src/Sessions.Core/WindowEnumerator.cs",
+          "finding": "In a lambda that uses `_` as a parameter name, a `_ =` discard collides with it and fails to compile; the discard was removed."
+        },
+        {
+          "path": "src/Sessions.Core/WindowWaiter.cs",
+          "finding": "A non-ASCII character accidentally entered an identifier and had to be fixed; the unused `using` was also dropped. Timeout is a named constant TimeoutSeconds = 15 with 200 ms polling."
+        }
+      ],
+      "workflow": [
+        "Building Core early, before writing tests, caught Win32 signature and compile issues sooner.",
+        "Making Win32-dependent collaborators injectable via interfaces allows fake-based tests of orchestration logic.",
+        "The sandbox classifies launching and killing real processes (Notepad) as interfering with workloads, so end-to-end checks that do this need user approval or a manual run."
+      ]
+    },
+    "friction": [
+      "The scratch end-to-end run that launches and kills Notepad was blocked by the sandbox, so step 20 verification could not be performed.",
+      "Compile error from the `_` lambda parameter colliding with a discard in WindowEnumerator.",
+      "A stray non-ASCII character in an identifier in WindowWaiter.cs required a fix."
+    ],
+    "open_items": [
+      "Manually verify step 20: Notepad with a file reopens at the saved position and size via GenericAdapter.Restore.",
+      "The launch→wait→place Win32 path (WindowWaiter and WindowPlacer real implementations) has no unit coverage.",
+      "The IAdapter.Id and Entry.AdapterId additions go beyond the spec and are left for the user to approve.",
+      "Changes are not yet committed; seven suggested commit messages were provided."
+    ]
   }
 }
